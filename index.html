@@ -562,6 +562,7 @@ body {
 </head>
 <body>
 
+<!-- ════ TOPBAR ════ -->
 <div class="topbar">
   <div class="t-logo">
     <div class="t-shield">🛡️</div>
@@ -570,8 +571,10 @@ body {
   <span class="t-tag">Supportcheck — Intern</span>
 </div>
 
+<!-- ════ APP ════ -->
 <div class="app">
 
+  <!-- ── SIDEBAR ── -->
   <aside class="sidebar">
 
     <div class="scard">
@@ -607,8 +610,10 @@ body {
 
   </aside>
 
+  <!-- ── MAIN CONTENT AREA ── -->
   <main class="main">
 
+    <!-- SCHERM 1: START / GEGEVENS -->
     <div id="screen-info" class="screen active">
       <div>
         <h1 class="ph-title">Nieuwe Supportcheck</h1>
@@ -645,6 +650,7 @@ body {
           </button>
         </div>
 
+        <!-- Dynamische Foutcode Wrapper -->
         <div id="fout-wrap" class="fout-wrap">
           <div class="fout-title">Selecteer actieve fout/situatie (optioneel)</div>
           <div id="fout-grid" class="fout-grid"></div>
@@ -683,6 +689,7 @@ body {
       </div>
     </div>
 
+    <!-- SCHERM 2: DIAGNOSEVRAGEN -->
     <div id="screen-question" class="screen">
       <div id="merk-strip-container"></div>
       
@@ -701,6 +708,7 @@ body {
       </div>
     </div>
 
+    <!-- SCHERM 3: EINDRESULTAAT -->
     <div id="screen-result" class="screen">
       <div class="res-header">
         <div id="res-badge" class="res-badge"></div>
@@ -727,37 +735,49 @@ body {
   </main>
 </div>
 
+<!-- ════ JAVASCRIPT LOGICA ════ -->
 <script>
 // --- DATABASES & DATA STRUCTURES ---
-// Alle codes (T1, T2, AL etc.) zijn weggelaten, enkel de pure situatie/omschrijving blijft behouden.
-// Alle gespecificeerde fouten routeren nu direct naar 'support'.
+// Alle codes (T1, AL, E100 enz.) zijn weggehaald. Enkel pure omschrijvingen.
+// Alle gespecificeerde fouten routeren nu consistent direct naar 'support'.
 const FOUTCODES = {
   risco: [
     { id: "fc_r1", desc: "Laag batterijniveau bediendeel", type: "support", actions: ["Laat de klant controleren of de netstroom aanwezig is.", "Indien nodig op afstand administratief verwerken of regulier onderhoud inplannen."] },
     { id: "fc_r2", desc: "Laag batterijniveau centrale", type: "support", actions: ["Controleer hoofdvoeding.", "Support probeert systeemspanning op afstand te meten."] },
-    { id: "fc_r3", desc: "Zekering defect / Algemene systeemstoring", type: "support", actions: ["Controleer systeemspanning via configuratiesoftware.", "Geef telefonische instructies om randapparatuur na te lopen."] }, // Was T3 -> Support
-    { id: "fc_r4", desc: "Communicatiefout meldkamer", type: "support", actions: ["Controleer status van de netwerkkabel of SIM-kaart.", "Herstart de communicatiemodule op afstand."] }, // Was T6 -> Support
-    { id: "fc_r5", desc: "Draadloze module storing", type: "support", actions: ["Controleer signaalsterkte van draadloze componenten via software.", "Begeleid klant bij basiscontrole detector."] }, // Was T9 -> Support
-    { id: "fc_r6", desc: "Voedingsfout auxiliary", type: "support", actions: ["Controleer AUX-uitgangen via het supportpaneel.", "Reset de AUX-voeding elektronisch."] }, // Was T10 -> Support
-    { id: "fc_r7", desc: "Smarthub offline", type: "support", actions: ["Controleer internetverbinding op locatie.", "Herstart de hub in overleg met de klant."] }, // Was T11 -> Support
-    { id: "fc_r8", desc: "Inbraakmelding geactiveerd", type: "support", actions: ["Verifieer de alarmbron direct in de geschiedenis.", "Loop actuele status van de zones na via afstandstoegang."] }, // Inbraak -> Support
-    { id: "fc_r9", desc: "Brandmelding / Rookdetector actief", type: "support", actions: ["Controleer direct de status bij de klant.", "Support reset de brandlus na verificatie van een valse melding."] }, // Brand -> Support
-    { id: "fc_r10", desc: "Sabotagemelding behuizing of component", type: "support", actions: ["Identificeer welk component openstaat.", "Begeleid klant om behuizing goed te sluiten en voer remote reset uit."] } // Sabotage -> Support
+    { id: "fc_r3", desc: "Zekering defect / Algemene systeemstoring", type: "support", actions: ["Controleer systeemspanning via configuratiesoftware.", "Geef telefonische instructies om randapparatuur na te lopen."] },
+    { id: "fc_r4", desc: "Communicatiefout meldkamer", type: "support", actions: ["Controleer status van de netwerkkabel of SIM-kaart.", "Herstart de communicatiemodule op afstand."] },
+    { id: "fc_r5", desc: "Draadloze module storing", type: "support", actions: ["Controleer signaalsterkte van draadloze componenten via software.", "Begeleid klant bij basiscontrole detector."] },
+    { id: "fc_r6", desc: "Voedingsfout auxiliary", type: "support", actions: ["Controleer AUX-uitgangen via het supportpaneel.", "Reset de AUX-voeding elektronisch."] },
+    { id: "fc_r7", desc: "Smarthub offline", type: "support", actions: ["Controleer internetverbinding op locatie.", "Herstart de hub in overleg met de klant."] },
+    { id: "fc_r8", desc: "Inbraakmelding geactiveerd", type: "support", actions: ["Verifieer de alarmbron direct in de geschiedenis.", "Loop actuele status van de zones na via afstandstoegang."] },
+    { id: "fc_r9", desc: "Brandmelding / Rookdetector actief", type: "support", actions: ["Controleer direct de status bij de klant.", "Support reset de brandlus na verifiëren van een valse melding."] },
+    { id: "fc_r10", desc: "Sabotagemelding behuizing of component", type: "support", actions: ["Identificeer welk component openstaat.", "Begeleid klant om behuizing goed te sluiten en voer remote reset uit."] }
   ],
   bosch: [
-    { id: "fc_b1", desc: "Voedingsprobleem netspanning", type: "support", actions: ["Controleer de hoofdzekering in de meterkast.", "Controleer of er een algemene stroomstoring is in de regio."] }, // Was E100 -> Support
-    { id: "fc_b2", desc: "Interne batterijfout", type: "support", actions: ["Voer meting uit via afstandsondersteuning.", "Wis de foutvoorwaarde via de Bosch support-tool indien gestabiliseerd."] }, // Was E200 -> Support
-    { id: "fc_b3", desc: "Sabotagemelding alarm lus", type: "support", actions: ["Spoor de sabotagevoorwaarde op via het remote paneel.", "Support helpt de klant de sabotage fysiek op te heffen."] }, // Sabotage -> Support
-    { id: "fc_b4", desc: "Inbraakmelding zone", type: "support", actions: ["Controleer alarmgeheugen digitaal.", "Wis het alarm na telefonische verificatie."] } // Inbraak -> Support
+    { id: "fc_b1", desc: "Voedingsprobleem netspanning", type: "support", actions: ["Controleer de hoofdzekering in de meterkast.", "Controleer of er een algemene stroomstoring is in de regio."] },
+    { id: "fc_b2", desc: "Interne batterijfout / Accu ontladen", type: "support", actions: ["Voer accumeting uit via afstandsondersteuning.", "Wis de foutvoorwaarde via de Bosch Remote Security Control (RSC) zodra gestabiliseerd."] },
+    { id: "fc_b3", desc: "Sabotagemelding alarm lus / Behuizing open", type: "support", actions: ["Spoor de sabotagevoorwaarde op via het remote paneel.", "Support helpt de klant de sabotage fysiek te controleren en te sluiten."] },
+    { id: "fc_b4", desc: "Inbraakmelding zone actief", type: "support", actions: ["Controleer alarmgeheugen digitaal.", "Wis het actieve alarm na telefonische verificatie met de klant."] },
+    { id: "fc_b5", desc: "Systeemdatum en tijd onjuist / Tijdverlies", type: "support", actions: ["Synchroniseer de interne klok direct via de remote software.", "Begeleid de klant bij het handmatig juist zetten via de keypad-commando's."] },
+    { id: "fc_b6", desc: "Communicatiefout telefoonlijn of IP-module", type: "support", actions: ["Controleer de netwerkverbinding of de analoge lijnspanning.", "Herstart de netwerkkaart/kiezer via de remote support-tool."] },
+    { id: "fc_b7", desc: "Draadloze melder batterij laag", type: "support", actions: ["Identificeer via de software om welke melder het gaat.", "Evalueer signaalsterkte en plan indien nodig een reguliere service/batterijwissel in."] },
+    { id: "fc_b8", desc: "Storing sirene-uitgang / Bekabelingsfout", type: "support", actions: ["Controleer de uitgangsspanning op de centrale via software.", "Support controleert of de eindlijnsweerstand van de sirene correct binnenkomt."] },
+    { id: "fc_b9", desc: "Communicatiefout met bediendeel (codepaneel)", type: "support", actions: ["Controleer de remote status van de data-busbekabeling.", "Support onderzoekt of er spanningsval op de bus aanwezig is."] }
   ],
   satel: [
-    { id: "fc_s1", desc: "Algemene systeemstoring", type: "support", actions: ["Lees het storingslogboek op afstand uit.", "Voer een soft-reset uit van de Satel-centrale via DLOADX."] },
-    { id: "fc_s2", desc: "Sabotage keypad of expander", type: "support", actions: ["Controleer de sabotageschakelaar van de behuizing.", "Support wist de melding zodra de klant bevestigt dat alles dicht zit."] }, // Sabotage -> Support
-    { id: "fc_s3", desc: "Brandmelding lus", type: "support", actions: ["Analyseer de status van de brandzone.", "Sluit uit of er rookontwikkeling is en reset via software."] } // Brand -> Support
+    { id: "fc_s1", desc: "Algemene systeemstoring", type: "support", actions: ["Lees het storingslogboek op afstand uit via DLOADX.", "Voer een soft-reset uit van de Satel-centrale via de software."] },
+    { id: "fc_s2", desc: "Sabotage keypad of expander module", type: "support", actions: ["Controleer de sabotageschakelaar van de specifieke behuizing via de busstatus.", "Support wist de melding zodra de klant bevestigt dat de behuizing dicht zit."] },
+    { id: "fc_s3", desc: "Brandmelding lus / Rookmelder geactiveerd", type: "support", actions: ["Analyseer de status van de brandzone direct.", "Sluit uit of er sprake is van rookontwikkeling en reset de brandlus via software."] },
+    { id: "fc_s4", desc: "Klok niet ingesteld / Real-time clock fout", type: "support", actions: ["Stuur de actuele tijd en datum naar de centrale via DLOADX.", "Controleer of de interne back-up batterij van de processor nog voldoende spanning levert."] },
+    { id: "fc_s5", desc: "Storing netwerkmodule / Geen verbinding met server", type: "support", actions: ["Controleer de IP-instellingen en de fysieke netwerkkabel.", "Herstart de ETHM-1 of INT-GSM module geforceerd via de software."] },
+    { id: "fc_s6", desc: "Accu storing / Hoge interne weerstand", type: "support", actions: ["Lees de actuele laadstroom en accuspanning uit via DLOADX.", "Support beoordeelt of de accu op afstand herstelt na netspanningsherstel of vervangen moet worden."] },
+    { id: "fc_s7", desc: "Geen verbinding met draadloze melder (ABAX)", type: "support", actions: ["Controleer de algemene status van de ABAX-ontvanger.", "Support voert een specifieke RF-signaaltest uit voor de offline zone."] },
+    { id: "fc_s8", desc: "Overbelasting voedingsuitgang / AUX storing", type: "support", actions: ["Analyseer het stroomverbruik van de aangesloten randmodules.", "Reset de elektronische zekering van de voedingsuitgang via het supportpaneel."] },
+    { id: "fc_s9", desc: "Inbraakalarm zone geactiveerd", type: "support", actions: ["Lees direct het interne alarmgeheugen uit.", "Evalueer met de klant welke ruimte het betreft en wis de alarmtoestand."] }
   ],
   salto: [
-    { id: "fc_sa1", desc: "Centrale verbinding verbroken", type: "support", actions: ["Controleer de netwerkconnectiviteit van de Salto server.", "Herstart de Salto netwerkdienst/router via support-toegang."] }, // Centrale prob -> Support
-    { id: "fc_sa2", desc: "Deurcontroller offline", type: "support", actions: ["Controleer de lokale voeding van de online controller.", "Support controleert de bus-bekabeling status op afstand."] } // Centrale prob -> Support
+    { id: "fc_sa1", desc: "Centrale verbinding verbroken", type: "support", actions: ["Controleer de netwerkconnectiviteit van de Salto server.", "Herstart de Salto netwerkdienst/router via support-toegang."] },
+    { id: "fc_sa2", desc: "Deurcontroller offline", type: "support", actions: ["Controleer de lokale voeding van de online controller.", "Support controleert de bus-bekabeling status op afstand."] }
   ],
   onbekend: [
     { id: "fc_o1", desc: "Systeem reageert nergens meer op", type: "support", actions: ["Controleer of er stroom aanwezig is op het stopcontact.", "Support start administratief onderzoek in CRM."] }
@@ -780,7 +800,7 @@ const TREES = {
   },
   zekering_inschakelen: {
     q: "Is het probleem opgelost na het inschakelen van de zekering?",
-    hint: "Het kan even duren voordat het bediendeel weer volledig is opgstart.",
+    hint: "Het kan even duren voordat het bediendeel weer volledig is opgestart.",
     ja: "eind_opgelost",
     nee: "stroom_centrale_check"
   },
@@ -788,7 +808,7 @@ const TREES = {
     endpoint: true,
     title: "Interne Voedingsstoring — Eerst Support",
     badge: "support",
-    desc: "Netspanning is aanwezig maar het systeem blijft dood. Dit dient eerst administratief en via remote verbinding gecontroleerd te worden.",
+    desc: "Netspanning is aanwezig maar het systeem blijft dood. Dit dient eerst administratief en via remote verbinding geconformeerd te worden.",
     actions: ["Lees de verbindingstatus uit in het support-portaal.", "Probeer een remote ping of soft-reset uit te voeren.", "Sluit hardware-defecten uit alvorens een technicus te sturen."]
   },
   reageert_code: {
@@ -831,10 +851,10 @@ const MANUALS = {
     { naam: "LightSYS+ Gebruikershandleiding", modellen: "LightSYS / ProSYS", desc: "Instructies voor het uitlezen van het storingsgeheugen en basishandelingen." }
   ],
   bosch: [
-    { naam: "Bosch Solution Series Gids", modellen: "Solution 2000 / 3000", desc: "Overzicht van systeemmeldingen en herstelprocedures bij spanningsuitval." }
+    { naam: "Bosch Solution Series Gids", modellen: "Solution 2000 / 3000 / 6000", desc: "Overzicht van systeemmeldingen en herstelprocedures bij spanningsuitval." }
   ],
   satel: [
-    { naam: "Satel Integra Handleiding", modellen: "Integra 32 / 64 / 128", desc: "Gedetailleerde stappen voor het wissen van alarmen en sabotagevoorwaarden." }
+    { naam: "Satel Integra Handleiding", modellen: "Integra 32 / 64 / 128 / Versa", desc: "Gedetailleerde stappen voor het wissen van alarmen en sabotagevoorwaarden via DLOADX." }
   ],
   salto: [
     { naam: "Salto Space Server Handleiding", modellen: "XS4 / CU42", desc: "Probleemoplossing bij database-disconnects en offline netwerkcomponenten." }
