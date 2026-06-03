@@ -3,1298 +3,1517 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Inbraakveilig — Supportcheck</title>
+<title>Supportcheck — Inbraakveilig</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Epilogue:wght@300;400;500;600&family=Epilogue:ital,wght@1,400&display=swap" rel="stylesheet">
 <style>
-:root {
-  --navy:        #0b1d3a;
-  --navy-2:      #132847;
-  --navy-3:      #1c3660;
-  --red:         #c0392b;
-  --red-light:   #e74c3c;
-  --green:       #00916e;
-  --green-light: #00b894;
-  --amber:       #d68910;
-  --white:       #ffffff;
-  --off:         #f4f6fb;
-  --g100:        #eaeef6;
-  --g200:        #d4daea;
-  --g300:        #b0bcd4;
-  --g400:        #8595b2;
-  --g600:        #4a5a78;
-  --g800:        #1e2d48;
-  --risco:       #005bac;
-  --risco-light: #e8f0fb;
-  --bosch:       #c0001a;
-  --bosch-light: #fde8ea;
-  --satel:       #00693e;
-  --satel-light: #e0f4ec;
-  --salto:       #1a1a2e;
-  --salto-2:     #16213e;
-  --salto-light: #e8e8f0;
-  --sha-sm: 0 1px 3px rgba(11,29,58,.08);
-  --sha-md: 0 4px 16px rgba(11,29,58,.10);
-  --sha-lg: 0 8px 32px rgba(11,29,58,.14);
-  --sha-xl: 0 16px 56px rgba(11,29,58,.18);
-  --r: 10px;
-  --ease: cubic-bezier(.4,0,.2,1);
-}
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@300;400;500;600&display=swap');
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+  :root {
+    --red:     #C8102E;
+    --red-dark:#8B0A1F;
+    --red-glow:rgba(200,16,46,0.25);
+    --yellow:  #F5C518;
+    --black:   #0A0A0A;
+    --surface: #141414;
+    --card:    #1C1C1C;
+    --border:  #2A2A2A;
+    --muted:   #888;
+    --text:    #EFEFEF;
+    --radius:  6px;
+  }
 
-body {
-  font-family: 'Epilogue', sans-serif;
-  background: var(--off);
-  color: var(--g800);
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  font-weight: 400;
-}
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* ─── TOPBAR ─── */
-.topbar {
-  background: var(--navy);
-  height: 58px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 1.75rem;
-  position: sticky;
-  top: 0;
-  z-index: 300;
-  box-shadow: 0 2px 20px rgba(0,0,0,.22);
-}
-.t-logo {
-  display: flex;
-  align-items: center;
-  gap: .65rem;
-}
-.t-shield {
-  width: 32px; height: 32px;
-  background: var(--red);
-  border-radius: 7px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: .95rem;
-  box-shadow: 0 2px 8px rgba(192,57,43,.4);
-}
-.t-name {
-  font-family: 'Syne', sans-serif;
-  font-weight: 800;
-  font-size: 1.05rem;
-  color: var(--white);
-  letter-spacing: .01em;
-}
-.t-tag {
-  font-size: .65rem;
-  font-weight: 500;
-  color: var(--g300);
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  background: rgba(255,255,255,.07);
-  padding: .25rem .7rem;
-  border-radius: 20px;
-  border: 1px solid rgba(255,255,255,.1);
-}
+  body {
+    background: var(--black);
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    font-weight: 400;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
 
-/* ─── LAYOUT ─── */
-.app {
-  flex: 1;
-  display: grid;
-  grid-template-columns: 290px 1fr;
-  gap: 1.5rem;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 1.5rem 1.5rem 3rem;
-  width: 100%;
-  align-items: start;
-}
+  /* ── TOP BAR ── */
+  header {
+    background: var(--surface);
+    border-bottom: 2px solid var(--red);
+    padding: 0 2rem;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.6);
+  }
 
-/* ─── SIDEBAR ─── */
-.sidebar {
-  display: flex;
-  flex-direction: column;
-  gap: .9rem;
-  position: sticky;
-  top: 74px;
-}
-.scard {
-  background: var(--white);
-  border: 1px solid var(--g100);
-  border-radius: var(--r);
-  padding: 1.1rem 1.2rem;
-  box-shadow: var(--sha-sm);
-}
-.sc-label {
-  font-family: 'Syne', sans-serif;
-  font-size: .6rem;
-  font-weight: 700;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: var(--g300);
-  margin-bottom: .65rem;
-  display: flex;
-  align-items: center;
-  gap: .4rem;
-}
-.sc-label::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--g100);
-}
+  .logo-area {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
 
-/* klant badge */
-.k-merk-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: .4rem;
-  font-size: .68rem;
-  font-weight: 700;
-  padding: .2rem .7rem;
-  border-radius: 20px;
-  margin-bottom: .7rem;
-  text-transform: uppercase;
-  letter-spacing: .05em;
-}
-.k-merk-badge.risco { background: var(--risco-light); color: var(--risco); }
-.k-merk-badge.bosch { background: var(--bosch-light); color: var(--bosch); }
-.k-merk-badge.satel { background: var(--satel-light); color: var(--satel); }
-.k-merk-badge.onbekend { background: var(--g100); color: var(--g600); }
-.k-merk-badge.salto { background: var(--salto-light); color: var(--salto); }
+  /* Logo: plaats een bestand genaamd "logo.png" in dezelfde map als dit HTML-bestand op GitHub.
+     De afbeelding wordt dan automatisch hier getoond. */
+  #logo-img {
+    height: 42px;
+    width: auto;
+    object-fit: contain;
+    border-radius: 4px;
+    display: block;
+  }
 
-.k-row { margin-bottom: .45rem; }
-.k-lbl { font-size: .62rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--g300); }
-.k-val { font-size: .84rem; font-weight: 600; color: var(--g800); line-height: 1.3; }
-.k-empty { font-size: .8rem; color: var(--g300); font-style: italic; text-align: center; padding: .4rem 0; }
+  .logo-fallback {
+    display: none;
+    background: var(--red);
+    color: #fff;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 1.1rem;
+    letter-spacing: .05em;
+    padding: 6px 10px;
+    border-radius: 4px;
+  }
 
-/* progress */
-.prog-meta { display: flex; justify-content: space-between; font-size: .72rem; color: var(--g400); margin-bottom: .35rem; }
-.prog-track { height: 4px; background: var(--g100); border-radius: 2px; overflow: hidden; }
-.prog-bar {
-  height: 100%;
-  background: linear-gradient(90deg, var(--navy-3), var(--red-light));
-  border-radius: 2px;
-  transition: width .45s var(--ease);
-}
+  .company-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 1.3rem;
+    letter-spacing: .08em;
+    color: var(--text);
+    text-transform: uppercase;
+  }
 
-/* log */
-.log-scroll {
-  max-height: 240px;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: .35rem;
-  scrollbar-width: thin;
-  scrollbar-color: var(--g200) transparent;
-}
-.log-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: .5rem;
-  padding: .4rem .55rem;
-  background: var(--off);
-  border: 1px solid var(--g100);
-  border-radius: 7px;
-  font-size: .73rem;
-}
-.log-q { color: var(--g600); flex: 1; line-height: 1.35; }
-.log-ant {
-  flex-shrink: 0;
-  font-size: .58rem;
-  font-weight: 800;
-  letter-spacing: .06em;
-  padding: 2px 6px;
-  border-radius: 12px;
-  text-transform: uppercase;
-}
-.log-ant.ja  { background: #d1f5ea; color: #0a5c3a; }
-.log-ant.nee { background: #fde0de; color: #8b1a1a; }
-.log-empty { font-size: .78rem; color: var(--g300); font-style: italic; text-align: center; padding: .5rem 0; }
+  .company-name span { color: var(--red); }
 
-/* ─── MAIN ─── */
-.main { display: flex; flex-direction: column; gap: 1.1rem; }
-.screen { display: none; flex-direction: column; gap: 1.1rem; }
-.screen.active { display: flex; animation: fadeUp .22s var(--ease); }
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
+  .tool-badge {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: .7rem;
+    font-weight: 600;
+    letter-spacing: .12em;
+    color: var(--yellow);
+    background: rgba(245,197,24,.10);
+    border: 1px solid rgba(245,197,24,.30);
+    padding: 3px 8px;
+    border-radius: 3px;
+    text-transform: uppercase;
+  }
 
-/* page header */
-.ph-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: var(--navy);
-  letter-spacing: -.03em;
-  line-height: 1.1;
-}
-.ph-sub {
-  margin-top: .25rem;
-  font-size: .88rem;
-  color: var(--g400);
-  line-height: 1.55;
-}
+  /* ── LAYOUT ── */
+  main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2.5rem 1.5rem 4rem;
+  }
 
-/* card */
-.card {
-  background: var(--white);
-  border: 1px solid var(--g100);
-  border-radius: var(--r);
-  padding: 1.75rem 2rem;
-  box-shadow: var(--sha-sm);
-}
+  .container { width: 100%; max-width: 760px; }
 
-/* merk picker */
-.merk-grid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: .75rem;
-  margin-bottom: 1.5rem;
-}
-.merk-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: .5rem;
-  padding: 1rem .5rem;
-  border: 2px solid var(--g100);
-  border-radius: var(--r);
-  background: var(--white);
-  cursor: pointer;
-  transition: all .18s var(--ease);
-  font-family: 'Syne', sans-serif;
-  font-weight: 700;
-  font-size: .78rem;
-  color: var(--g600);
-  letter-spacing: .02em;
-  text-transform: uppercase;
-}
-.merk-btn:hover { transform: translateY(-2px); box-shadow: var(--sha-md); }
-.merk-btn.active-risco { border-color: var(--risco); background: var(--risco-light); color: var(--risco); }
-.merk-btn.active-bosch { border-color: var(--bosch); background: var(--bosch-light); color: var(--bosch); }
-.merk-btn.active-satel { border-color: var(--satel); background: var(--satel-light); color: var(--satel); }
-.merk-btn.active-onbekend { border-color: var(--g400); background: var(--g100); color: var(--g600); }
-.merk-btn.active-salto { border-color: var(--salto); background: var(--salto-light); color: var(--salto); }
-.merk-ico { font-size: 1.4rem; display:flex; align-items:center; justify-content:center; min-height:32px; }
-.merk-dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: transparent;
-  transition: background .18s;
-}
-.merk-btn.active-risco .merk-dot { background: var(--risco); }
-.merk-btn.active-bosch .merk-dot { background: var(--bosch); }
-.merk-btn.active-satel .merk-dot { background: var(--satel); }
-.merk-btn.active-onbekend .merk-dot { background: var(--g400); }
-.merk-btn.active-salto .merk-dot { background: var(--salto); }
+  /* ── SCREENS ── */
+  .screen { display: none; }
+  .screen.active { display: block; animation: fadeUp .35s ease; }
 
-/* form */
-.fg { display: flex; flex-direction: column; gap: .3rem; margin-bottom: .85rem; }
-.fg-row { display: grid; grid-template-columns: 1fr 1fr; gap: .85rem; }
-.fg label { font-size: .72rem; font-weight: 600; color: var(--g400); text-transform: uppercase; letter-spacing: .05em; }
-.fg input, .fg select, .fg textarea {
-  font-family: 'Epilogue', sans-serif;
-  font-size: .88rem;
-  padding: .6rem .85rem;
-  border: 1.5px solid var(--g100);
-  border-radius: 8px;
-  background: var(--off);
-  color: var(--g800);
-  outline: none;
-  transition: border-color .15s, box-shadow .15s, background .15s;
-}
-.fg input:focus, .fg select:focus, .fg textarea:focus {
-  border-color: var(--navy-3);
-  box-shadow: 0 0 0 3px rgba(28,54,96,.08);
-  background: var(--white);
-}
-.fg textarea { resize: vertical; min-height: 60px; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
 
-/* foutcode select area */
-.fout-wrap {
-  background: var(--off);
-  border: 1px solid var(--g100);
-  border-radius: 8px;
-  padding: .75rem 1rem;
-  margin-bottom: .85rem;
-  display: none;
-}
-.fout-wrap.visible { display: block; animation: fadeUp .2s; }
-.fout-title { font-size: .7rem; font-weight: 700; color: var(--g400); text-transform: uppercase; letter-spacing: .06em; margin-bottom: .5rem; }
-.fout-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: .5rem; }
-.fout-chip {
-  font-family: 'Epilogue', sans-serif;
-  font-size: .78rem;
-  font-weight: 600;
-  padding: .5rem .75rem;
-  border-radius: 6px;
-  border: 1.5px solid var(--g200);
-  background: var(--white);
-  cursor: pointer;
-  transition: all .15s;
-  text-align: left;
-  color: var(--g800);
-}
-.fout-chip:hover { border-color: var(--navy-3); background: var(--g100); }
-.fout-chip.selected { border-color: var(--navy-3); background: var(--navy); color: var(--white); }
-.fout-desc { font-size: .78rem; color: inherit; line-height: 1.3; }
+  /* ── SECTION LABEL ── */
+  .section-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: .7rem;
+    font-weight: 600;
+    letter-spacing: .16em;
+    color: var(--red);
+    text-transform: uppercase;
+    margin-bottom: .6rem;
+  }
 
-/* btn */
-.btn {
-  font-family: 'Syne', sans-serif;
-  font-size: .82rem;
-  font-weight: 700;
-  letter-spacing: .03em;
-  padding: .65rem 1.35rem;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all .16s var(--ease);
-  display: inline-flex;
-  align-items: center;
-  gap: .4rem;
-  text-transform: uppercase;
-}
-.btn-navy { background: var(--navy); color: var(--white); }
-.btn-navy:hover { background: var(--navy-2); box-shadow: var(--sha-md); transform: translateY(-1px); }
-.btn-ghost { background: var(--g100); color: var(--g600); }
-.btn-ghost:hover { background: var(--g200); }
-.btn-reset { background: #fde0de; color: var(--red); }
-.btn-reset:hover { background: var(--red); color: var(--white); }
-.btn-green { background: #d1f5ea; color: var(--green); }
-.btn-green:hover { background: var(--green); color: var(--white); }
-.btn:disabled { opacity: .45; pointer-events: none; }
+  /* ── TITLES ── */
+  h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 2.6rem;
+    font-weight: 800;
+    line-height: 1.1;
+    color: var(--text);
+    margin-bottom: .5rem;
+  }
+  h1 em { color: var(--red); font-style: normal; }
 
-/* divider */
-.div { height: 1px; background: var(--g100); margin: .75rem 0; }
+  h2 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 1.4rem;
+  }
 
-/* ─── VRAAG SCHERM ─── */
-.merk-strip {
-  display: flex;
-  align-items: center;
-  gap: .5rem;
-  font-size: .72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: .07em;
-  padding: .35rem .75rem;
-  border-radius: 20px;
-  margin-bottom: .1rem;
-  width: fit-content;
-}
-.merk-strip.risco { background: var(--risco-light); color: var(--risco); }
-.merk-strip.bosch { background: var(--bosch-light); color: var(--bosch); }
-.merk-strip.satel { background: var(--satel-light); color: var(--satel); }
-.merk-strip.onbekend { background: var(--g100); color: var(--g600); }
-.merk-strip.salto { background: var(--salto-light); color: var(--salto); }
+  .subtitle {
+    color: var(--muted);
+    font-size: .95rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    max-width: 560px;
+  }
 
-.q-card {
-  background: var(--white);
-  border: 1px solid var(--g100);
-  border-radius: var(--r);
-  padding: 2rem 2.25rem;
-  box-shadow: var(--sha-md);
-  animation: fadeUp .22s var(--ease);
-}
-.q-num {
-  font-family: 'Syne', sans-serif;
-  font-size: .58rem;
-  font-weight: 700;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  color: var(--g300);
-  margin-bottom: .5rem;
-}
-.q-text {
-  font-family: 'Syne', sans-serif;
-  font-size: 1.22rem;
-  font-weight: 700;
-  color: var(--navy);
-  line-height: 1.38;
-  letter-spacing: -.02em;
-  margin-bottom: .9rem;
-}
-.q-hint {
-  font-size: .82rem;
-  color: var(--g600);
-  line-height: 1.55;
-  background: var(--off);
-  border-left: 3px solid var(--g200);
-  border-radius: 0 7px 7px 0;
-  padding: .55rem .9rem;
-  margin-bottom: 1.5rem;
-}
-.q-hint strong { color: var(--g800); }
+  /* ── BRAND GRID ── */
+  .brand-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
 
-.yn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .9rem; }
-.yn-btn {
-  font-family: 'Syne', sans-serif;
-  font-size: 1.05rem;
-  font-weight: 800;
-  padding: 1.1rem 1rem;
-  border-radius: 10px;
-  border: 2px solid transparent;
-  cursor: pointer;
-  transition: all .18s var(--ease);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: .5rem;
-  text-transform: uppercase;
-  letter-spacing: .05em;
-}
-.yn-ja  { background: #d1f5ea; color: #07573a; border-color: #9ee8ce; }
-.yn-nee { background: #fde0de; color: #7c1a19; border-color: #f7b8b5; }
-.yn-ja:hover  { background: var(--green-light); color: var(--white); border-color: var(--green-light); transform: translateY(-2px); box-shadow: 0 6px 22px rgba(0,184,148,.3); }
-.yn-nee:hover { background: var(--red-light);   color: var(--white); border-color: var(--red-light);   transform: translateY(-2px); box-shadow: 0 6px 22px rgba(231,76,60,.3); }
+  .brand-card {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.4rem 1.2rem;
+    cursor: pointer;
+    transition: border-color .2s, background .2s, transform .15s, box-shadow .2s;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: .4rem;
+    position: relative;
+    overflow: hidden;
+  }
 
-/* ─── RESULTAAT ─── */
-.res-header {
-  display: flex;
-  flex-direction: column;
-  gap: .75rem;
-  background: var(--white);
-  border: 1px solid var(--g100);
-  border-radius: var(--r);
-  padding: 2rem 2.25rem;
-  box-shadow: var(--sha-lg);
-}
-.res-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: .45rem;
-  padding: .3rem .9rem;
-  border-radius: 20px;
-  font-family: 'Syne', sans-serif;
-  font-size: .65rem;
-  font-weight: 800;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  width: fit-content;
-}
-.res-badge.support    { background: #d1f5ea; color: #07573a; }
-.res-badge.technician { background: #fef3cd; color: #7a5200; }
-.res-title {
-  font-family: 'Syne', sans-serif;
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: var(--navy);
-  letter-spacing: -.03em;
-  line-height: 1.15;
-}
-.res-desc {
-  font-size: .88rem;
-  color: var(--g600);
-  line-height: 1.65;
-}
+  .brand-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--red-glow) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity .25s;
+  }
 
-.res-block {
-  background: var(--white);
-  border: 1px solid var(--g100);
-  border-radius: var(--r);
-  padding: 1.5rem 1.75rem;
-  box-shadow: var(--sha-sm);
-}
-.res-block-title {
-  font-family: 'Syne', sans-serif;
-  font-size: .62rem;
-  font-weight: 700;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: var(--g300);
-  margin-bottom: .85rem;
-  display: flex;
-  align-items: center;
-  gap: .4rem;
-}
-.res-block-title::after { content: ''; flex: 1; height: 1px; background: var(--g100); }
+  .brand-card:hover {
+    border-color: var(--red);
+    background: #222;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(200,16,46,.18);
+  }
+  .brand-card:hover::before { opacity: 1; }
 
-.action-list { list-style: none; display: flex; flex-direction: column; gap: .4rem; }
-.action-list li {
-  display: flex;
-  align-items: flex-start;
-  gap: .6rem;
-  font-size: .86rem;
-  line-height: 1.45;
-  padding: .5rem .8rem;
-  background: var(--off);
-  border: 1px solid var(--g100);
-  border-radius: 7px;
-  color: var(--g800);
-}
-.action-num {
-  flex-shrink: 0;
-  width: 18px; height: 18px;
-  border-radius: 50%;
-  background: var(--navy);
-  color: var(--white);
-  font-size: .6rem;
-  font-weight: 800;
-  display: flex; align-items: center; justify-content: center;
-  margin-top: 1px;
-}
+  .brand-icon {
+    font-size: 1.6rem;
+    margin-bottom: .2rem;
+  }
 
-.res-btns { display: flex; gap: .65rem; flex-wrap: wrap; margin-top: .25rem; }
+  .brand-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: var(--text);
+    letter-spacing: .04em;
+  }
 
-/* handleidingen blok */
-.man-blok { display:flex; flex-direction:column; gap:.65rem; margin-top:.25rem; }
-.man-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: .75rem 1rem;
-  background: var(--off);
-  border: 1px solid var(--g100);
-  border-radius: 9px;
-}
-.man-naam { font-family:'Syne',sans-serif; font-size:.82rem; font-weight:700; color:var(--navy); margin-bottom:.15rem; }
-.man-modellen { font-size:.68rem; font-family:monospace; color:var(--risco); font-weight:600; margin-bottom:.2rem; }
-.man-desc { font-size:.75rem; color:var(--g600); line-height:1.4; }
+  .brand-sub {
+    font-size: .8rem;
+    color: var(--muted);
+  }
 
+  .brand-arrow {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--red);
+    font-size: 1.2rem;
+    opacity: 0;
+    transition: opacity .2s, right .2s;
+  }
+  .brand-card:hover .brand-arrow { opacity: 1; right: .8rem; }
+
+  /* ── PROGRESS BAR ── */
+  .progress-wrap {
+    background: var(--border);
+    border-radius: 99px;
+    height: 4px;
+    margin-bottom: 2rem;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--red);
+    border-radius: 99px;
+    transition: width .4s ease;
+    position: relative;
+  }
+
+  .progress-fill::after {
+    content: '';
+    position: absolute;
+    right: 0; top: 0; bottom: 0;
+    width: 20px;
+    background: linear-gradient(90deg, transparent, rgba(245,197,24,.5));
+    border-radius: 99px;
+  }
+
+  /* ── QUESTION CARD ── */
+  .question-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+
+  .step-counter {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: .85rem;
+    color: var(--muted);
+    letter-spacing: .08em;
+  }
+
+  .brand-pill {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: .75rem;
+    font-weight: 600;
+    letter-spacing: .1em;
+    color: var(--red);
+    background: rgba(200,16,46,.12);
+    border: 1px solid rgba(200,16,46,.3);
+    padding: 3px 10px;
+    border-radius: 99px;
+    text-transform: uppercase;
+  }
+
+  .question-card {
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .question-text {
+    font-size: 1.1rem;
+    font-weight: 500;
+    line-height: 1.6;
+    color: var(--text);
+    margin-bottom: 1.6rem;
+  }
+
+  .question-hint {
+    font-size: .85rem;
+    color: var(--muted);
+    margin-top: -.8rem;
+    margin-bottom: 1.4rem;
+    line-height: 1.5;
+  }
+
+  /* ── BUTTONS ── */
+  .btn-row {
+    display: flex;
+    gap: .8rem;
+  }
+
+  .btn {
+    flex: 1;
+    padding: .85rem 1.2rem;
+    border-radius: var(--radius);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all .18s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+  }
+
+  .btn-yes {
+    background: rgba(200,16,46,.15);
+    border-color: var(--red);
+    color: var(--text);
+  }
+  .btn-yes:hover { background: var(--red); color: #fff; box-shadow: 0 4px 18px rgba(200,16,46,.4); }
+
+  .btn-no {
+    background: var(--surface);
+    border-color: var(--border);
+    color: var(--muted);
+  }
+  .btn-no:hover { border-color: #555; color: var(--text); background: #252525; }
+
+  .btn-primary {
+    background: var(--red);
+    border-color: var(--red);
+    color: #fff;
+    flex: unset;
+    padding: .85rem 2rem;
+  }
+  .btn-primary:hover { background: var(--red-dark); border-color: var(--red-dark); box-shadow: 0 4px 18px rgba(200,16,46,.45); }
+
+  .btn-secondary {
+    background: transparent;
+    border-color: var(--border);
+    color: var(--muted);
+    flex: unset;
+    padding: .85rem 1.6rem;
+    font-size: .95rem;
+  }
+  .btn-secondary:hover { border-color: var(--muted); color: var(--text); }
+
+  .btn-warn {
+    background: rgba(245,197,24,.12);
+    border-color: var(--yellow);
+    color: var(--yellow);
+    flex: unset;
+    padding: .85rem 1.8rem;
+  }
+  .btn-warn:hover { background: var(--yellow); color: var(--black); }
+
+  /* ── RESULT CARD ── */
+  .result-banner {
+    border-radius: var(--radius);
+    padding: 1.6rem 2rem;
+    margin-bottom: 1.4rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1.2rem;
+  }
+
+  .result-banner.support {
+    background: rgba(200,16,46,.10);
+    border: 2px solid var(--red);
+  }
+
+  .result-banner.technician {
+    background: rgba(245,197,24,.08);
+    border: 2px solid var(--yellow);
+  }
+
+  .result-icon {
+    font-size: 2rem;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .result-body h3 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: .4rem;
+  }
+
+  .result-body p {
+    font-size: .9rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .result-detail {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.4rem;
+    margin-bottom: 1.4rem;
+  }
+
+  .result-detail h4 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: .06em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: .8rem;
+  }
+
+  .detail-item {
+    display: flex;
+    align-items: flex-start;
+    gap: .6rem;
+    font-size: .9rem;
+    color: var(--text);
+    margin-bottom: .5rem;
+    line-height: 1.5;
+  }
+
+  .detail-item::before {
+    content: '›';
+    color: var(--red);
+    font-weight: bold;
+    flex-shrink: 0;
+    font-size: 1rem;
+    line-height: 1.4;
+  }
+
+  .action-row {
+    display: flex;
+    gap: .8rem;
+    flex-wrap: wrap;
+  }
+
+  /* ── CUSTOMER INFO FORM ── */
+  .form-group {
+    margin-bottom: 1rem;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: .8rem;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: .4rem;
+  }
+
+  .form-group input {
+    width: 100%;
+    background: var(--card);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: .7rem .9rem;
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    font-size: .95rem;
+    transition: border-color .2s;
+    outline: none;
+  }
+
+  .form-group input:focus { border-color: var(--red); }
+  .form-group input::placeholder { color: #555; }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; }
+
+  /* ── DIVIDER ── */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 1.6rem 0;
+  }
+
+  /* ── TOAST ── */
+  #toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--red);
+    padding: .8rem 1.4rem;
+    border-radius: var(--radius);
+    font-size: .9rem;
+    color: var(--text);
+    transition: transform .35s ease;
+    z-index: 999;
+    white-space: nowrap;
+    box-shadow: 0 8px 32px rgba(0,0,0,.6);
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    padding: 1.2rem;
+    font-size: .75rem;
+    color: #444;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 520px) {
+    .brand-grid { grid-template-columns: 1fr; }
+    .form-row { grid-template-columns: 1fr; }
+    h1 { font-size: 2rem; }
+    .action-row { flex-direction: column; }
+  }
 </style>
 </head>
 <body>
 
-<!-- ════ TOPBAR ════ -->
-<div class="topbar">
-  <div class="t-logo">
-    <div class="t-shield">🛡️</div>
-    <span class="t-name">Inbraakveilig</span>
+<header>
+  <div class="logo-area">
+    <!--
+      Zet je logo-bestand (genaamd "logo.png") in dezelfde GitHub-map als dit HTML-bestand.
+      De afbeelding wordt dan automatisch geladen.
+      Ondersteunde namen: logo.png / logo.jpg / logo.jpeg / logo.svg / logo.webp
+    -->
+    <img id="logo-img" src="logo.png" alt="Inbraakveilig logo"
+         onerror="this.style.display='none'; document.querySelector('.logo-fallback').style.display='block';">
+    <span class="logo-fallback">IV</span>
+    <span class="company-name">Inbraak<span>veilig</span></span>
   </div>
-  <span class="t-tag">Supportcheck — Intern</span>
+  <span class="tool-badge">Supportcheck</span>
+</header>
+
+<main>
+<div class="container">
+
+  <!-- ══════════════════════════════════════════
+       SCREEN 1 — START / KLANTGEGEVENS
+  ══════════════════════════════════════════ -->
+  <div class="screen active" id="screen-start">
+
+    <div class="section-label">Support diagnose tool</div>
+    <h1>Welkom bij<br><em>Supportcheck</em></h1>
+    <p class="subtitle">
+      Vul eerst de klantgegevens in en kies dan het geïnstalleerde systeem.
+      De tool begeleidt je stap voor stap naar de juiste oplossing.
+    </p>
+
+    <div class="question-card" style="margin-bottom:1.4rem;">
+      <div class="section-label" style="margin-bottom:1rem;">Klantgegevens</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Voornaam klant</label>
+          <input type="text" id="inp-firstname" placeholder="Jan">
+        </div>
+        <div class="form-group">
+          <label>Achternaam klant</label>
+          <input type="text" id="inp-lastname" placeholder="Janssen">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Telefoonnummer</label>
+          <input type="text" id="inp-phone" placeholder="04xx xx xx xx">
+        </div>
+        <div class="form-group">
+          <label>Klantnummer (optioneel)</label>
+          <input type="text" id="inp-custno" placeholder="IV-00000">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Adres installatie</label>
+        <input type="text" id="inp-address" placeholder="Straat 1, 9000 Gent">
+      </div>
+    </div>
+
+    <div class="section-label">Kies het geïnstalleerde systeem</div>
+    <div class="brand-grid">
+      <div class="brand-card" onclick="startFlow('risco')">
+        <div class="brand-icon">🔴</div>
+        <div class="brand-title">Risco</div>
+        <div class="brand-sub">Alarmsysteem</div>
+        <span class="brand-arrow">›</span>
+      </div>
+      <div class="brand-card" onclick="startFlow('bosch')">
+        <div class="brand-icon">🔷</div>
+        <div class="brand-title">Bosch</div>
+        <div class="brand-sub">Alarmsysteem</div>
+        <span class="brand-arrow">›</span>
+      </div>
+      <div class="brand-card" onclick="startFlow('satel')">
+        <div class="brand-icon">🟠</div>
+        <div class="brand-title">Satel</div>
+        <div class="brand-sub">Alarmsysteem</div>
+        <span class="brand-arrow">›</span>
+      </div>
+      <div class="brand-card" onclick="startFlow('salto')">
+        <div class="brand-icon">🟡</div>
+        <div class="brand-title">SALTO</div>
+        <div class="brand-sub">Toegangscontrole</div>
+        <span class="brand-arrow">›</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SCREEN 2 — VRAGEN
+  ══════════════════════════════════════════ -->
+  <div class="screen" id="screen-questions">
+
+    <div class="question-meta">
+      <span class="step-counter" id="step-label">Stap 1 / 8</span>
+      <span class="brand-pill" id="brand-pill">Risco</span>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-fill" id="progress-bar" style="width:0%"></div>
+    </div>
+
+    <div class="question-card">
+      <div class="question-text" id="question-text">Laad vraag...</div>
+      <div class="question-hint" id="question-hint" style="display:none;"></div>
+      <div class="btn-row">
+        <button class="btn btn-yes" onclick="answer(true)">✔ Ja</button>
+        <button class="btn btn-no"  onclick="answer(false)">✘ Nee</button>
+      </div>
+    </div>
+
+    <button class="btn btn-secondary" onclick="goBack()" style="width:100%;justify-content:center;">
+      ← Vorige vraag
+    </button>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       SCREEN 3 — RESULTAAT
+  ══════════════════════════════════════════ -->
+  <div class="screen" id="screen-result">
+
+    <div class="section-label">Diagnoseresultaat</div>
+    <h2 id="result-title">Resultaat</h2>
+
+    <div class="result-banner" id="result-banner">
+      <div class="result-icon" id="result-icon">📞</div>
+      <div class="result-body">
+        <h3 id="result-heading">Support kan helpen</h3>
+        <p  id="result-desc">—</p>
+      </div>
+    </div>
+
+    <div class="result-detail">
+      <h4>Vastgesteld probleem</h4>
+      <div id="result-findings"></div>
+    </div>
+
+    <div class="result-detail" id="result-manual-block" style="display:none;">
+      <h4>Aanbevolen handleiding</h4>
+      <div class="detail-item" id="result-manual-text"></div>
+    </div>
+
+    <div class="action-row">
+      <button class="btn btn-primary" onclick="generatePDF()">⬇ PDF genereren</button>
+      <button class="btn btn-warn"    onclick="sendEmail()">✉ E-mail opstellen</button>
+      <button class="btn btn-secondary" onclick="resetTool()">↺ Opnieuw starten</button>
+    </div>
+
+  </div>
+
 </div>
+</main>
 
-<!-- ════ APP ════ -->
-<div class="app">
+<footer>Inbraakveilig · Supportcheck · Intern gebruik</footer>
+<div id="toast">Bericht</div>
 
-  <!-- ── SIDEBAR ── -->
-  <aside class="sidebar">
-
-    <div class="scard">
-      <div class="sc-label">Klantdossier</div>
-      <div id="k-empty"><div class="k-empty">Nog geen klant ingevuld.</div></div>
-      <div id="k-info" style="display:none">
-        <div class="k-merk-badge" id="k-merk-badge"></div>
-        <div class="k-row"><div class="k-lbl">Naam</div><div class="k-val" id="k-naam">—</div></div>
-        <div class="k-row"><div class="k-lbl">Telefoon</div><div class="k-val" id="k-tel">—</div></div>
-        <div class="k-row"><div class="k-lbl">Klantnr.</div><div class="k-val" id="k-nr">—</div></div>
-        <div class="k-row"><div class="k-lbl">Systeem</div><div class="k-val" id="k-sys">—</div></div>
-        <div id="k-note-row" class="k-row" style="display:none"><div class="k-lbl">Notitie</div><div class="k-val" id="k-note">—</div></div>
-      </div>
-    </div>
-
-    <div class="scard">
-      <div class="sc-label">Voortgang</div>
-      <div class="prog-meta">
-        <span id="prog-txt">Niet gestart</span>
-        <span id="prog-pct">0%</span>
-      </div>
-      <div class="prog-track">
-        <div class="prog-bar" id="prog-bar" style="width: 0%"></div>
-      </div>
-    </div>
-
-    <div class="scard">
-      <div class="sc-label">Antwoord Log</div>
-      <div class="log-scroll" id="log-container">
-        <div class="log-empty" id="log-empty">Nog geen stappen doorlopen.</div>
-      </div>
-    </div>
-
-  </aside>
-
-  <!-- ── MAIN CONTENT AREA ── -->
-  <main class="main">
-
-    <!-- SCHERM 1: START / GEGEVENS -->
-    <div id="screen-info" class="screen active">
-      <div>
-        <h1 class="ph-title">Nieuwe Supportcheck</h1>
-        <p class="ph-sub">Selecteer het merk en vul de klantgegevens in om de diagnose te starten.</p>
-      </div>
-
-      <div class="card">
-        <div class="sc-label" style="margin-bottom: 1rem;">1. Kies Systeem Merk</div>
-        <div class="merk-grid">
-          <button class="merk-btn" data-merk="risco">
-            <span class="merk-ico">🔵</span>
-            <span>Risco</span>
-            <div class="merk-dot"></div>
-          </button>
-          <button class="merk-btn" data-merk="bosch">
-            <span class="merk-ico">🔴</span>
-            <span>Bosch</span>
-            <div class="merk-dot"></div>
-          </button>
-          <button class="merk-btn" data-merk="satel">
-            <span class="merk-ico">🟢</span>
-            <span>Satel</span>
-            <div class="merk-dot"></div>
-          </button>
-          <button class="merk-btn" data-merk="salto">
-            <span class="merk-ico">⚫</span>
-            <span>Salto</span>
-            <div class="merk-dot"></div>
-          </button>
-          <button class="merk-btn" data-merk="onbekend">
-            <span class="merk-ico">⚪</span>
-            <span>Onbekend</span>
-            <div class="merk-dot"></div>
-          </button>
-        </div>
-
-        <!-- Dynamische Foutcode Wrapper -->
-        <div id="fout-wrap" class="fout-wrap">
-          <div class="fout-title">Selecteer actieve fout/situatie (optioneel)</div>
-          <div id="fout-grid" class="fout-grid"></div>
-        </div>
-
-        <div class="sc-label" style="margin-bottom: 1rem; margin-top: 1.5rem;">2. Klantgegevens</div>
-        <div class="fg-row">
-          <div class="fg">
-            <label>Klantnaam</label>
-            <input type="text" id="in-naam" placeholder="bv. Jan Janssen">
-          </div>
-          <div class="fg">
-            <label>Telefoonnummer</label>
-            <input type="text" id="in-tel" placeholder="bv. 0495 00 00 00">
-          </div>
-        </div>
-        <div class="fg-row">
-          <div class="fg">
-            <label>Klantnummer</label>
-            <input type="text" id="in-nr" placeholder="bv. 12345">
-          </div>
-          <div class="fg">
-            <label>Specifiek Systeem / Model</label>
-            <input type="text" id="in-sys" placeholder="bv. LightSYS 2">
-          </div>
-        </div>
-        <div class="fg">
-          <label>Interne Notitie</label>
-          <textarea id="in-note" placeholder="Extra opmerkingen over de situatie van de klant..."></textarea>
-        </div>
-
-        <div class="div" style="margin-top: 1.5rem;"></div>
-        <div style="text-align: right; margin-top: 1rem;">
-          <button id="btn-start" class="btn btn-navy" disabled>Start Diagnoseboom</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- SCHERM 2: DIAGNOSEVRAGEN -->
-    <div id="screen-question" class="screen">
-      <div id="merk-strip-container"></div>
-      
-      <div class="q-card">
-        <div class="q-num" id="q-num">Vraag #1</div>
-        <div class="q-text" id="q-text">—</div>
-        <div class="q-hint" id="q-hint"></div>
-        
-        <div class="yn-grid">
-          <button class="yn-btn yn-ja" id="btn-ja">👍 JA</button>
-          <button class="yn-btn yn-nee" id="btn-nee">👎 NEE</button>
-        </div>
-        
-        <div class="div" style="margin-top: 2rem;"></div>
-        <button class="btn btn-ghost" id="btn-back">⬅️ Vorige Vraag</button>
-      </div>
-    </div>
-
-    <!-- SCHERM 3: EINDRESULTAAT -->
-    <div id="screen-result" class="screen">
-      <div class="res-header">
-        <div id="res-badge" class="res-badge"></div>
-        <h2 class="res-title" id="res-title">—</h2>
-        <p class="res-desc" id="res-desc">—</p>
-      </div>
-
-      <div class="res-block">
-        <div class="res-block-title">Aanbevolen Actieplan</div>
-        <ul class="action-list" id="res-actions"></ul>
-      </div>
-
-      <div class="res-block" id="res-manuals-block">
-        <div class="res-block-title">Relevante Documentatie</div>
-        <div class="man-blok" id="res-manuals"></div>
-      </div>
-
-      <div class="res-btns">
-        <button class="btn btn-green" id="btn-pdf">📄 Exporteer PDF</button>
-        <button class="btn btn-reset" id="btn-restart">🔄 Nieuwe Check</button>
-      </div>
-    </div>
-
-  </main>
-</div>
-
-<!-- ════ JAVASCRIPT LOGICA ════ -->
 <script>
-// --- DATABASES & DATA STRUCTURES ---
-// Alle codes (T1, AL, E100 enz.) zijn weggehaald. Enkel pure omschrijvingen.
-// Alle gespecificeerde fouten routeren nu consistent direct naar 'support'.
-const FOUTCODES = {
-  risco: [
-    { id: "fc_r1", desc: "Laag batterijniveau bediendeel", type: "support", actions: ["Laat de klant controleren of de netstroom aanwezig is.", "Indien nodig op afstand administratief verwerken of regulier onderhoud inplannen."] },
-    { id: "fc_r2", desc: "Laag batterijniveau centrale", type: "support", actions: ["Controleer hoofdvoeding.", "Support probeert systeemspanning op afstand te meten."] },
-    { id: "fc_r3", desc: "Zekering defect / Algemene systeemstoring", type: "support", actions: ["Controleer systeemspanning via configuratiesoftware.", "Geef telefonische instructies om randapparatuur na te lopen."] },
-    { id: "fc_r4", desc: "Communicatiefout meldkamer", type: "support", actions: ["Controleer status van de netwerkkabel of SIM-kaart.", "Herstart de communicatiemodule op afstand."] },
-    { id: "fc_r5", desc: "Draadloze module storing", type: "support", actions: ["Controleer signaalsterkte van draadloze componenten via software.", "Begeleid klant bij basiscontrole detector."] },
-    { id: "fc_r6", desc: "Voedingsfout auxiliary", type: "support", actions: ["Controleer AUX-uitgangen via het supportpaneel.", "Reset de AUX-voeding elektronisch."] },
-    { id: "fc_r7", desc: "Smarthub offline", type: "support", actions: ["Controleer internetverbinding op locatie.", "Herstart de hub in overleg met de klant."] },
-    { id: "fc_r8", desc: "Inbraakmelding geactiveerd", type: "support", actions: ["Verifieer de alarmbron direct in de geschiedenis.", "Loop actuele status van de zones na via afstandstoegang."] },
-    { id: "fc_r9", desc: "Brandmelding / Rookdetector actief", type: "support", actions: ["Controleer direct de status bij de klant.", "Support reset de brandlus na verifiëren van een valse melding."] },
-    { id: "fc_r10", desc: "Sabotagemelding behuizing of component", type: "support", actions: ["Identificeer welk component openstaat.", "Begeleid klant om behuizing goed te sluiten en voer remote reset uit."] }
-  ],
-  bosch: [
-    { id: "fc_b1", desc: "Voedingsprobleem netspanning", type: "support", actions: ["Controleer de hoofdzekering in de meterkast.", "Controleer of er een algemene stroomstoring is in de regio."] },
-    { id: "fc_b2", desc: "Interne batterijfout / Accu ontladen", type: "support", actions: ["Voer accumeting uit via afstandsondersteuning.", "Wis de foutvoorwaarde via de Bosch Remote Security Control (RSC) zodra gestabiliseerd."] },
-    { id: "fc_b3", desc: "Sabotagemelding alarm lus / Behuizing open", type: "support", actions: ["Spoor de sabotagevoorwaarde op via het remote paneel.", "Support helpt de klant de sabotage fysiek te controleren en te sluiten."] },
-    { id: "fc_b4", desc: "Inbraakmelding zone actief", type: "support", actions: ["Controleer alarmgeheugen digitaal.", "Wis het actieve alarm na telefonische verificatie met de klant."] },
-    { id: "fc_b5", desc: "Systeemdatum en tijd onjuist / Tijdverlies", type: "support", actions: ["Synchroniseer de interne klok direct via de remote software.", "Begeleid de klant bij het handmatig juist zetten via de keypad-commando's."] },
-    { id: "fc_b6", desc: "Communicatiefout telefoonlijn of IP-module", type: "support", actions: ["Controleer de netwerkverbinding of de analoge lijnspanning.", "Herstart de netwerkkaart/kiezer via de remote support-tool."] },
-    { id: "fc_b7", desc: "Draadloze melder batterij laag", type: "support", actions: ["Identificeer via de software om welke melder het gaat.", "Evalueer signaalsterkte en plan indien nodig een reguliere service/batterijwissel in."] },
-    { id: "fc_b8", desc: "Storing sirene-uitgang / Bekabelingsfout", type: "support", actions: ["Controleer de uitgangsspanning op de centrale via software.", "Support controleert of de eindlijnsweerstand van de sirene correct binnenkomt."] },
-    { id: "fc_b9", desc: "Communicatiefout met bediendeel (codepaneel)", type: "support", actions: ["Controleer de remote status van de data-busbekabeling.", "Support onderzoekt of er spanningsval op de bus aanwezig is."] }
-  ],
-  satel: [
-    { id: "fc_s1", desc: "Algemene systeemstoring", type: "support", actions: ["Lees het storingslogboek op afstand uit via DLOADX.", "Voer een soft-reset uit van de Satel-centrale via de software."] },
-    { id: "fc_s2", desc: "Sabotage keypad of expander module", type: "support", actions: ["Controleer de sabotageschakelaar van de specifieke behuizing via de busstatus.", "Support wist de melding zodra de klant bevestigt dat de behuizing dicht zit."] },
-    { id: "fc_s3", desc: "Brandmelding lus / Rookmelder geactiveerd", type: "support", actions: ["Analyseer de status van de brandzone direct.", "Sluit uit of er sprake is van rookontwikkeling en reset de brandlus via software."] },
-    { id: "fc_s4", desc: "Klok niet ingesteld / Real-time clock fout", type: "support", actions: ["Stuur de actuele tijd en datum naar de centrale via DLOADX.", "Controleer of de interne back-up batterij van de processor nog voldoende spanning levert."] },
-    { id: "fc_s5", desc: "Storing netwerkmodule / Geen verbinding met server", type: "support", actions: ["Controleer de IP-instellingen en de fysieke netwerkkabel.", "Herstart de ETHM-1 of INT-GSM module geforceerd via de software."] },
-    { id: "fc_s6", desc: "Accu storing / Hoge interne weerstand", type: "support", actions: ["Lees de actuele laadstroom en accuspanning uit via DLOADX.", "Support beoordeelt of de accu op afstand herstelt na netspanningsherstel of vervangen moet worden."] },
-    { id: "fc_s7", desc: "Geen verbinding met draadloze melder (ABAX)", type: "support", actions: ["Controleer de algemene status van de ABAX-ontvanger.", "Support voert een specifieke RF-signaaltest uit voor de offline zone."] },
-    { id: "fc_s8", desc: "Overbelasting voedingsuitgang / AUX storing", type: "support", actions: ["Analyseer het stroomverbruik van de aangesloten randmodules.", "Reset de elektronische zekering van de voedingsuitgang via het supportpaneel."] },
-    { id: "fc_s9", desc: "Inbraakalarm zone geactiveerd", type: "support", actions: ["Lees direct het interne alarmgeheugen uit.", "Evalueer met de klant welke ruimte het betreft en wis de alarmtoestand."] }
-  ],
-  salto: [
-    { id: "fc_sa1", desc: "Centrale verbinding verbroken", type: "support", actions: ["Controleer de netwerkconnectiviteit van de Salto server.", "Herstart de Salto netwerkdienst/router via support-toegang."] },
-    { id: "fc_sa2", desc: "Deurcontroller offline", type: "support", actions: ["Controleer de lokale voeding van de online controller.", "Support controleert de bus-bekabeling status op afstand."] }
-  ],
-  onbekend: [
-    { id: "fc_o1", desc: "Systeem reageert nergens meer op", type: "support", actions: ["Controleer of er stroom aanwezig is op het stopcontact.", "Support start administratief onderzoek in CRM."] }
-  ]
-};
+// ══════════════════════════════════════════════════════════
+//  DATA — BESLISBOMEN PER MERK
+//  Elke node: { id, question, hint?, yes: id|'RESULT', no: id|'RESULT' }
+//  Resultaatnodes: { id, type:'support'|'technician', heading, desc, findings:[], manual? }
+// ══════════════════════════════════════════════════════════
 
-// Algemene vragenboom logica
-const TREES = {
-  start: {
-    q: "Is het bediendeel of alarmsysteem volledig spanningsloos?",
-    hint: "Laat de klant controleren of er leds branden of tekst op het scherm staat.",
-    ja: "stroom_uitval",
-    nee: "reageert_code"
+const FLOWS = {
+
+  /* ═══════════════════════════════════════ RISCO ═══════════════════════ */
+  risco: {
+    start: 'r1',
+    nodes: {
+      r1: {
+        question: 'Brandt er een rode of oranje LED op het bedienpaneel?',
+        hint: 'Kijk op het display of op het paneel zelf naar knipperende of continue LED-signalen.',
+        yes: 'r2', no: 'r5'
+      },
+      r2: {
+        question: 'Geeft het paneel een "Lage Batterij" of "Accu Fout" melding?',
+        hint: 'Dit kan als tekst op het display staan of als specifieke foutcode (bv. Z01 / BAT).',
+        yes: 'RES_RISCO_TECH_BAT', no: 'r3'
+      },
+      r3: {
+        question: 'Is er een zone- of sectormelding actief (bv. "Zone 03 Sabotage")?',
+        hint: 'Zones zijn de verschillende detectors aangesloten op het systeem.',
+        yes: 'r4', no: 'RES_RISCO_SUPPORT_ZONE'
+      },
+      r4: {
+        question: 'Is de betrokken detector fysiek beschadigd of duidelijk losgeraakt?',
+        yes: 'RES_RISCO_TECH_SENSOR', no: 'RES_RISCO_SUPPORT_ZONE'
+      },
+      r5: {
+        question: 'Kan de klant het systeem niet inschakelen (bewapenen)?',
+        hint: 'De klant voert de code in maar het systeem gaat niet op scherp.',
+        yes: 'r6', no: 'r9'
+      },
+      r6: {
+        question: 'Geeft het paneel de melding "Open zone" of "Deur/raam open"?',
+        yes: 'RES_RISCO_SUPPORT_OPENZONE', no: 'r7'
+      },
+      r7: {
+        question: 'Werkt de gsm/communicatiemodule niet (RiscoCloud offline)?',
+        hint: 'Controleer of de klant de app kan verbinden of de LED op de module brandt.',
+        yes: 'r8', no: 'RES_RISCO_SUPPORT_CODE'
+      },
+      r8: {
+        question: 'Heeft de klant recent zijn internetverbinding of provider gewijzigd?',
+        hint: 'Een nieuwe router of modem kan de communicatie van het alarmsysteem verstoren.',
+        yes: 'RES_RISCO_TECH_MODEM', no: 'RES_RISCO_SUPPORT_COMM'
+      },
+      r9: {
+        question: 'Gaat het alarm af zonder duidelijke reden (vals alarm)?',
+        yes: 'r10', no: 'RES_RISCO_SUPPORT_GENERAL'
+      },
+      r10: {
+        question: 'Treedt het vals alarm altijd op hetzelfde moment op (bv. \'s nachts of bij wind)?',
+        yes: 'RES_RISCO_SUPPORT_FALSEALARM', no: 'RES_RISCO_SUPPORT_FALSEALARM'
+      },
+
+      // Resultaten
+      RES_RISCO_TECH_BAT: {
+        type: 'technician',
+        heading: 'Technieker nodig — Lage accu',
+        desc: 'De noodaccu van de centrale moet vervangen worden. Dit is een taak voor een technieker ter plaatse.',
+        findings: ['Lage batterijmelding op centrale', 'Accu vereist fysieke vervanging'],
+        manual: 'Risco ProSYS — Batterijonderhoud (hoofdstuk 5)'
+      },
+      RES_RISCO_TECH_SENSOR: {
+        type: 'technician',
+        heading: 'Technieker nodig — Defecte detector',
+        desc: 'Een detector is fysiek beschadigd of losgeraakt en moet ter plaatse hersteld of vervangen worden.',
+        findings: ['Sabotagemelding actieve zone', 'Detector vereist fysieke interventie'],
+        manual: 'Risco ProSYS — Zone-installatie (hoofdstuk 7)'
+      },
+      RES_RISCO_TECH_MODEM: {
+        type: 'technician',
+        heading: 'Technieker nodig — Modem/provider wijziging',
+        desc: 'Na een router- of providerwissel moet de communicatiemodule opnieuw worden geconfigureerd. Dit vereist een technieker of remote support via RiscoCloud.',
+        findings: ['Communicatiemodule offline na modemwissel', 'Herconfiguratie nodig'],
+        manual: 'Risco — Communicatiemodule instellen (hoofdstuk 9)'
+      },
+      RES_RISCO_SUPPORT_ZONE: {
+        type: 'support',
+        heading: 'Support kan helpen — Zone fout',
+        desc: 'Een zone geeft een fout maar de detector lijkt intact. Support kan via RiscoCloud de zone resetten of uitsluiten.',
+        findings: ['Zone- of sabotagemelding', 'Geen fysieke schade zichtbaar'],
+        manual: 'Risco ProSYS — Zones beheren (hoofdstuk 6)'
+      },
+      RES_RISCO_SUPPORT_OPENZONE: {
+        type: 'support',
+        heading: 'Support kan helpen — Open zone',
+        desc: 'Een detector (deur/raam) staat als open geregistreerd. Support kan de klant begeleiden om de zone te sluiten of tijdelijk uit te sluiten.',
+        findings: ['Systeem kan niet bewapend worden', 'Open zone gedetecteerd'],
+        manual: 'Risco ProSYS — Gebruikershandleiding (bewapening)'
+      },
+      RES_RISCO_SUPPORT_CODE: {
+        type: 'support',
+        heading: 'Support kan helpen — Code of instelling',
+        desc: 'Het systeem accepteert de code niet of er is een instellingsprobleem. Support kan via RiscoCloud de configuratie controleren.',
+        findings: ['Systeem reageert niet op code', 'Geen open zones of hardwarefouten'],
+        manual: 'Risco ProSYS — Gebruikerscodes (hoofdstuk 3)'
+      },
+      RES_RISCO_SUPPORT_COMM: {
+        type: 'support',
+        heading: 'Support kan helpen — Communicatiefout',
+        desc: 'De communicatiemodule is offline maar er was geen recent modemwissel. Support kan de verbinding diagnosticeren via RiscoCloud.',
+        findings: ['RiscoCloud niet bereikbaar', 'Geen providerwijziging gemeld'],
+        manual: 'Risco — Communicatiestatus controleren'
+      },
+      RES_RISCO_SUPPORT_FALSEALARM: {
+        type: 'support',
+        heading: 'Support kan helpen — Vals alarm',
+        desc: 'Support kan de logboeken via RiscoCloud bekijken en de gevoeligheid van de betrokken detector aanpassen.',
+        findings: ['Vals alarm zonder duidelijke oorzaak', 'Mogelijk gevoeligheidsinstelling detectoren'],
+        manual: 'Risco ProSYS — Detectorinstellingen (hoofdstuk 8)'
+      },
+      RES_RISCO_SUPPORT_GENERAL: {
+        type: 'support',
+        heading: 'Support kan helpen — Algemeen',
+        desc: 'Geen specifiek hardwareprobleem vastgesteld. Support kan het systeem via RiscoCloud verder diagnosticeren.',
+        findings: ['Geen duidelijk hardwareprobleem', 'Verdere diagnose via RiscoCloud nodig'],
+        manual: 'Risco ProSYS — Algemene gebruikershandleiding'
+      }
+    }
   },
-  stroom_uitval: {
-    q: "Staat de zekering/automaat in de elektriciteitskast goed ingeschakeld?",
-    hint: "Laat de klant expliciet controleren of de groep van het alarm niet is gesprongen.",
-    ja: "stroom_centrale_check",
-    nee: "zekering_inschakelen"
+
+  /* ═══════════════════════════════════════ BOSCH ═══════════════════════ */
+  bosch: {
+    start: 'b1',
+    nodes: {
+      b1: {
+        question: 'Toont het Bosch bediendeel een fout- of storingstekst?',
+        hint: 'Kijk op het LCD-display naar berichten zoals "Storing", "Sabotage" of een foutnummer.',
+        yes: 'b2', no: 'b5'
+      },
+      b2: {
+        question: 'Betreft de melding een "Accu Laag" of "Voedingsfout"?',
+        hint: 'Op Bosch-panelen: "Low Battery", "AC Failure" of vergelijkbare tekst.',
+        yes: 'RES_BOSCH_TECH_BAT', no: 'b3'
+      },
+      b3: {
+        question: 'Is er een sabotage- of manipulatiemelding (detector of kast)?',
+        yes: 'b4', no: 'RES_BOSCH_SUPPORT_FAULT'
+      },
+      b4: {
+        question: 'Is de detector of kasteenheid fysiek geopend of beschadigd?',
+        yes: 'RES_BOSCH_TECH_SABOTAGE', no: 'RES_BOSCH_SUPPORT_FAULT'
+      },
+      b5: {
+        question: 'Kan de klant het systeem niet in- of uitschakelen?',
+        hint: 'Code invoeren lukt niet of het systeem geeft geen reactie.',
+        yes: 'b6', no: 'b9'
+      },
+      b6: {
+        question: 'Wordt er een blokkerende zone gemeld op het display?',
+        yes: 'RES_BOSCH_SUPPORT_BLOCKZONE', no: 'b7'
+      },
+      b7: {
+        question: 'Is de Bosch RPS communicatielink actief (lamp/statusmelding op centrale)?',
+        hint: 'Controleer of de communicatiemodule (IP of GPRS) verbinding heeft.',
+        yes: 'b8', no: 'RES_BOSCH_SUPPORT_COMM'
+      },
+      b8: {
+        question: 'Heeft de klant recentelijk zijn internet of modem vervangen?',
+        hint: 'Een nieuwe router of provider kan de IP-module van Bosch offline zetten.',
+        yes: 'RES_BOSCH_TECH_MODEM', no: 'RES_BOSCH_SUPPORT_COMM'
+      },
+      b9: {
+        question: 'Treedt er een vals alarm op of klinkt de sirene onverwacht?',
+        yes: 'b10', no: 'RES_BOSCH_SUPPORT_GENERAL'
+      },
+      b10: {
+        question: 'Wordt een specifieke zone of detector altijd als trigger gemeld?',
+        yes: 'RES_BOSCH_SUPPORT_FALSEALARM', no: 'RES_BOSCH_SUPPORT_FALSEALARM'
+      },
+
+      RES_BOSCH_TECH_BAT: {
+        type: 'technician',
+        heading: 'Technieker nodig — Lage accu',
+        desc: 'De noodaccu van de Bosch-centrale moet worden vervangen. Vereist een technieker ter plaatse.',
+        findings: ['Accu laag / voedingsfoutmelding', 'Fysieke vervanging nodig'],
+        manual: 'Bosch Solution — Batterijvervangingsprocedure'
+      },
+      RES_BOSCH_TECH_SABOTAGE: {
+        type: 'technician',
+        heading: 'Technieker nodig — Sabotage kast/detector',
+        desc: 'Een detector of kastbehuizing is geopend of beschadigd. Technieker moet dit ter plaatse herstellen.',
+        findings: ['Sabotagemelding actief', 'Fysieke beschadiging vastgesteld'],
+        manual: 'Bosch Solution — Installatie en sabotagebeveiliging'
+      },
+      RES_BOSCH_TECH_MODEM: {
+        type: 'technician',
+        heading: 'Technieker nodig — Modem/provider wijziging',
+        desc: 'Na een modem- of providerwissel moet de IP-module opnieuw worden ingesteld via Bosch RPS. Technieker of remote RPS-sessie vereist.',
+        findings: ['IP-module offline na modemwissel', 'Herconfiguratie via Bosch RPS nodig'],
+        manual: 'Bosch — IP-communicatiemodule instellen (RPS)'
+      },
+      RES_BOSCH_SUPPORT_FAULT: {
+        type: 'support',
+        heading: 'Support kan helpen — Storingscode',
+        desc: 'Support kan via Bosch RPS de storingscode uitlezen en de zone of module resetten.',
+        findings: ['Storingscode aanwezig op display', 'Geen zichtbare fysieke schade'],
+        manual: 'Bosch Solution — Storingen verhelpen (Bosch RPS)'
+      },
+      RES_BOSCH_SUPPORT_BLOCKZONE: {
+        type: 'support',
+        heading: 'Support kan helpen — Geblokkeerde zone',
+        desc: 'Een zone blokkeert het bewapenen. Support kan via RPS de zone tijdelijk uitsluiten of resetten.',
+        findings: ['Zone blokkeert bewapening', 'Mogelijk open detector'],
+        manual: 'Bosch Solution — Zones uitsluiten (gebruikershandleiding)'
+      },
+      RES_BOSCH_SUPPORT_COMM: {
+        type: 'support',
+        heading: 'Support kan helpen — Communicatie',
+        desc: 'De RPS-verbinding is niet actief. Support kan de connectiviteitsstatus controleren en begeleiden.',
+        findings: ['RPS-link niet actief', 'Geen recente modemwijziging'],
+        manual: 'Bosch — Communicatiestatus en RPS-verbinding'
+      },
+      RES_BOSCH_SUPPORT_FALSEALARM: {
+        type: 'support',
+        heading: 'Support kan helpen — Vals alarm',
+        desc: 'Support kan via Bosch RPS het logboek raadplegen en de gevoeligheid van de triggerzone aanpassen.',
+        findings: ['Vals alarm vastgesteld', 'Gevoeligheid detector mogelijk te hoog'],
+        manual: 'Bosch Solution — Detectorgevoeligheid aanpassen'
+      },
+      RES_BOSCH_SUPPORT_GENERAL: {
+        type: 'support',
+        heading: 'Support kan helpen — Algemeen',
+        desc: 'Geen specifiek probleem vastgesteld. Support kan via Bosch RPS een volledige diagnose uitvoeren.',
+        findings: ['Geen duidelijk hardwareprobleem', 'Verdere diagnose via Bosch RPS'],
+        manual: 'Bosch Solution — Algemene installatiehandleiding'
+      }
+    }
   },
-  zekering_inschakelen: {
-    q: "Is het probleem opgelost na het inschakelen van de zekering?",
-    hint: "Het kan even duren voordat het bediendeel weer volledig is opgestart.",
-    ja: "eind_opgelost",
-    nee: "stroom_centrale_check"
+
+  /* ═══════════════════════════════════════ SATEL ═══════════════════════ */
+  satel: {
+    start: 's1',
+    nodes: {
+      s1: {
+        question: 'Geeft het Satel LCD-bedienpaneel een fout- of storingsmelding?',
+        hint: 'Kijk naar meldingen op het display van het INTEGRA- of PERFECTA-paneel.',
+        yes: 's2', no: 's5'
+      },
+      s2: {
+        question: 'Betreft de melding een "Batterijfout" of "Accu laag"?',
+        hint: 'Op Satel-systemen: "LO BAT", "AC LOSS" of centrale-LED knippert rood.',
+        yes: 'RES_SATEL_TECH_BAT', no: 's3'
+      },
+      s3: {
+        question: 'Is er een sabotagealarm op een zone of module?',
+        hint: 'Sabotagemeldingen duiden op een geopende of beschadigde detector.',
+        yes: 's4', no: 'RES_SATEL_SUPPORT_FAULT'
+      },
+      s4: {
+        question: 'Is de detector of module aantoonbaar geopend of beschadigd?',
+        yes: 'RES_SATEL_TECH_SABOTAGE', no: 'RES_SATEL_SUPPORT_FAULT'
+      },
+      s5: {
+        question: 'Kan de klant het systeem niet in- of uitschakelen via de code?',
+        yes: 's6', no: 's9'
+      },
+      s6: {
+        question: 'Meldt het paneel een "Open zone" die bewapening verhindert?',
+        yes: 'RES_SATEL_SUPPORT_OPENZONE', no: 's7'
+      },
+      s7: {
+        question: 'Is de DLOADX/GUARDX softwareverbinding actief (communicatiemodule bereikbaar)?',
+        hint: 'Controleer of de ETHM-1 / INT-GSM module nog verbinding heeft.',
+        yes: 's8', no: 'RES_SATEL_SUPPORT_COMM'
+      },
+      s8: {
+        question: 'Heeft de klant zijn modem of internetprovider recent gewijzigd?',
+        hint: 'Een nieuwe router kan de ETHM-1 module van het netwerk halen.',
+        yes: 'RES_SATEL_TECH_MODEM', no: 'RES_SATEL_SUPPORT_COMM'
+      },
+      s9: {
+        question: 'Is er een vals alarm geweest of gaat de sirene onverwacht af?',
+        yes: 's10', no: 'RES_SATEL_SUPPORT_GENERAL'
+      },
+      s10: {
+        question: 'Wordt dezelfde zone of hetzelfde tijdstip als trigger geregistreerd?',
+        yes: 'RES_SATEL_SUPPORT_FALSEALARM', no: 'RES_SATEL_SUPPORT_FALSEALARM'
+      },
+
+      RES_SATEL_TECH_BAT: {
+        type: 'technician',
+        heading: 'Technieker nodig — Lage accu',
+        desc: 'De noodaccu van de Satel-centrale is leeg en moet worden vervangen door een technieker.',
+        findings: ['Batterijfoutmelding op paneel', 'Accu vereist vervanging'],
+        manual: 'Satel INTEGRA — Batterijonderhoud'
+      },
+      RES_SATEL_TECH_SABOTAGE: {
+        type: 'technician',
+        heading: 'Technieker nodig — Sabotage',
+        desc: 'Een detector of module is geopend of beschadigd. Technieker moet dit ter plaatse herstellen.',
+        findings: ['Sabotagealarm actief', 'Fysieke schade vastgesteld'],
+        manual: 'Satel INTEGRA — Installatiehandleiding detectoren'
+      },
+      RES_SATEL_TECH_MODEM: {
+        type: 'technician',
+        heading: 'Technieker nodig — Modem/provider wijziging',
+        desc: 'De ETHM-1 module moet opnieuw geconfigureerd worden na een modemwissel. Dit vereist DLOADX-toegang door een technieker.',
+        findings: ['ETHM-1 offline na modemwissel', 'Herconfiguratie via DLOADX nodig'],
+        manual: 'Satel — ETHM-1 netwerkconfiguratie (DLOADX)'
+      },
+      RES_SATEL_SUPPORT_FAULT: {
+        type: 'support',
+        heading: 'Support kan helpen — Storingscode',
+        desc: 'Support kan via DLOADX of GUARDX de storingscode analyseren en zones of modules resetten.',
+        findings: ['Storingscode op display', 'Geen fysieke schade'],
+        manual: 'Satel INTEGRA — Storingen diagnosticeren (DLOADX)'
+      },
+      RES_SATEL_SUPPORT_OPENZONE: {
+        type: 'support',
+        heading: 'Support kan helpen — Open zone',
+        desc: 'Support kan de klant begeleiden om de open zone te sluiten of tijdelijk uit te sluiten via het paneel.',
+        findings: ['Open zone blokkeert bewapening'],
+        manual: 'Satel INTEGRA — Gebruikershandleiding (zones uitsluiten)'
+      },
+      RES_SATEL_SUPPORT_COMM: {
+        type: 'support',
+        heading: 'Support kan helpen — Communicatie',
+        desc: 'De DLOADX/GUARDX verbinding is verbroken. Support kan de connectiviteit controleren en herstellen.',
+        findings: ['DLOADX/GUARDX niet bereikbaar', 'Geen modemwijziging'],
+        manual: 'Satel — ETHM-1 en communicatiestatus'
+      },
+      RES_SATEL_SUPPORT_FALSEALARM: {
+        type: 'support',
+        heading: 'Support kan helpen — Vals alarm',
+        desc: 'Support kan via DLOADX het logboek analyseren en de gevoeligheid van de triggerzone aanpassen.',
+        findings: ['Vals alarm', 'Mogelijk gevoeligheidsprobleem detector'],
+        manual: 'Satel INTEGRA — Detectorgevoeligheid (DLOADX)'
+      },
+      RES_SATEL_SUPPORT_GENERAL: {
+        type: 'support',
+        heading: 'Support kan helpen — Algemeen',
+        desc: 'Geen specifiek probleem vastgesteld. Support voert verdere diagnose uit via DLOADX.',
+        findings: ['Geen duidelijk hardwareprobleem'],
+        manual: 'Satel INTEGRA — Algemene installatiehandleiding'
+      }
+    }
   },
-  stroom_centrale_check: {
-    endpoint: true,
-    title: "Interne Voedingsstoring — Eerst Support",
-    badge: "support",
-    desc: "Netspanning is aanwezig maar het systeem blijft dood. Dit dient eerst administratief en via remote verbinding geconformeerd te worden.",
-    actions: ["Lees de verbindingstatus uit in het support-portaal.", "Probeer een remote ping of soft-reset uit te voeren.", "Sluit hardware-defecten uit alvorens een technicus te sturen."]
-  },
-  reageert_code: {
-    q: "Reageert het systeem correct op de gebruikerscode of badge?",
-    hint: "Probeer het systeem een keer in en uit te schakelen om te zien of de invoer pakt.",
-    ja: "fout_blijft_staan",
-    nee: "code_blokkade"
-  },
-  code_blokkade: {
-    endpoint: true,
-    title: "Gebruikerscode of Keypad Blokkade",
-    badge: "support",
-    desc: "Het keypad accepteert de invoer niet. Support kan dit op afstand configureren en resetten.",
-    actions: ["Controleer de actieve gebruikersrechten in de software.", "Reset de pincode van de klant tijdelijk naar een standaardwaarde.", "Wis eventuele keypad-blokkades via de helpdeskverbinding."]
-  },
-  fout_blijft_staan: {
-    q: "Blijft de specifieke melding of het lampje actief na het resetten?",
-    hint: "Kijk of het systeem direct opnieuw in storing springt.",
-    ja: "algemene_remote_check",
-    nee: "eind_opgelost"
-  },
-  algemene_remote_check: {
-    endpoint: true,
-    title: "Systeemmelder Storing — Support Analyse",
-    badge: "support",
-    desc: "De foutvoorwaarde blijft actief. Support moet via de remote verbinding het diepe logboek bekijken.",
-    actions: ["Maak direct verbinding met de centrale van de klant.", "Lees de actuele status van de gemelde zones of lussen uit.", "Wis de foutvoorwaarde softwarematig indien veilig bevonden."]
-  },
-  eind_opgelost: {
-    endpoint: true,
-    title: "Systeem Succesvol Hersteld",
-    badge: "support",
-    desc: "Het probleem is via telefonische instructies en basiscontroles direct opgelost.",
-    actions: ["Wissel de ticketstatus naar opgelost in het CRM.", "Voeg de doorlopen stappen toe aan het klantdossier."]
+
+  /* ═══════════════════════════════════════ SALTO ════════════════════ */
+  salto: {
+    start: 'sa1',
+    nodes: {
+      sa1: {
+        question: 'Heeft de klant een probleem met een specifieke deur of slot?',
+        hint: 'Denk aan: deur opent niet, badge werkt niet, slot reageert niet.',
+        yes: 'sa2', no: 'sa8'
+      },
+      sa2: {
+        question: 'Werkt de badge/kaart van de klant niet meer op die deur?',
+        yes: 'sa3', no: 'sa5'
+      },
+      sa3: {
+        question: 'Werken de badges van andere gebruikers wél op diezelfde deur?',
+        yes: 'RES_SALTO_SUPPORT_BADGE', no: 'sa4'
+      },
+      sa4: {
+        question: 'Geeft het slot een foutlampje (rood knipperen) of geen reactie?',
+        yes: 'sa_bat_check', no: 'RES_SALTO_SUPPORT_LOCK'
+      },
+      sa_bat_check: {
+        question: 'Is de batterij van het slot mogelijk leeg (ouder dan 1–2 jaar of waarschuwingslampje)?',
+        hint: 'SALTO-sloten geven een laag batterijsignaal (rood LED) wanneer de batterij bijna leeg is.',
+        yes: 'RES_SALTO_TECH_BAT', no: 'RES_SALTO_SUPPORT_LOCK'
+      },
+      sa5: {
+        question: 'Is het slot zichtbaar beschadigd of geforceerd?',
+        yes: 'RES_SALTO_TECH_DAMAGE', no: 'sa6'
+      },
+      sa6: {
+        question: 'Heeft de klant recent een update gedaan in SALTO Space of ProAccess?',
+        hint: 'Na een software-update of database-export kunnen sloten niet-bijgewerkt zijn.',
+        yes: 'RES_SALTO_SUPPORT_UPDATE', no: 'RES_SALTO_SUPPORT_LOCK'
+      },
+      sa8: {
+        question: 'Heeft de klant een probleem met de SALTO-beheersoftware (Space of ProAccess)?',
+        yes: 'sa9', no: 'sa11'
+      },
+      sa9: {
+        question: 'Kan de klant niet inloggen op de software?',
+        yes: 'RES_SALTO_SUPPORT_SOFTWARE', no: 'sa10'
+      },
+      sa10: {
+        question: 'Worden wijzigingen (nieuwe badge, toegangsrecht) niet doorgevoerd naar de sloten?',
+        hint: 'Dit kan een synchronisatieprobleem zijn tussen software en online sloten.',
+        yes: 'RES_SALTO_SUPPORT_SYNC', no: 'RES_SALTO_SUPPORT_GENERAL'
+      },
+      sa11: {
+        question: 'Heeft de klant een probleem met een online slot of netwerkkoppeling (SALTO KS of SVN)?',
+        yes: 'sa12', no: 'RES_SALTO_SUPPORT_GENERAL'
+      },
+      sa12: {
+        question: 'Heeft de klant recentelijk zijn netwerk of modem vervangen?',
+        hint: 'Online SALTO-sloten (SALTO KS, Bluetooth) verliezen verbinding bij netwerkwijzigingen.',
+        yes: 'RES_SALTO_TECH_MODEM', no: 'RES_SALTO_SUPPORT_NETWORK'
+      },
+
+      RES_SALTO_TECH_BAT: {
+        type: 'technician',
+        heading: 'Technieker nodig — Batterij slot',
+        desc: 'De batterij van het SALTO-slot is leeg of bijna leeg. Een technieker moet de batterij ter plaatse vervangen.',
+        findings: ['Slot reageert niet of geeft rood batterijsignaal', 'Batterijvervanging vereist'],
+        manual: 'SALTO — Batterijvervanging elektronisch slot'
+      },
+      RES_SALTO_TECH_DAMAGE: {
+        type: 'technician',
+        heading: 'Technieker nodig — Mechanische schade',
+        desc: 'Het slot is mechanisch beschadigd of geforceerd. Vervanging of herstel ter plaatse nodig.',
+        findings: ['Zichtbare schade aan slot of deurbeslag', 'Mechanische interventie vereist'],
+        manual: 'SALTO — Mechanische installatiehandleiding'
+      },
+      RES_SALTO_TECH_MODEM: {
+        type: 'technician',
+        heading: 'Technieker nodig — Netwerk/modem wijziging',
+        desc: 'Na een netwerkwissel zijn de online SALTO-sloten offline. Herconfiguratie van de netwerkmodule vereist techniekerhulp.',
+        findings: ['Online sloten offline na modemwissel', 'Netwerkherconfiguratie nodig'],
+        manual: 'SALTO — Online netwerkconfiguratie (SALTO KS / SVN)'
+      },
+      RES_SALTO_SUPPORT_BADGE: {
+        type: 'support',
+        heading: 'Support kan helpen — Badge probleem',
+        desc: 'De individuele badge is verlopen, ingetrokken of niet gesynchroniseerd. Support kan dit controleren en oplossen via SALTO Space of ProAccess.',
+        findings: ['Individuele badge werkt niet', 'Andere badges werken wel'],
+        manual: 'SALTO Space — Badges en gebruikersbeheer'
+      },
+      RES_SALTO_SUPPORT_LOCK: {
+        type: 'support',
+        heading: 'Support kan helpen — Slotprobleem',
+        desc: 'Het slot reageert niet correct. Support kan via SALTO Space of ProAccess de slotstatus uitlezen en een herstelactie sturen.',
+        findings: ['Slot reageert niet correct', 'Geen zichtbare schade'],
+        manual: 'SALTO Space — Slotstatus en diagnose'
+      },
+      RES_SALTO_SUPPORT_UPDATE: {
+        type: 'support',
+        heading: 'Support kan helpen — Update probleem',
+        desc: 'Na een software-update zijn de sloten mogelijk niet bijgewerkt. Support kan een nieuwe export/synchronisatie uitvoeren.',
+        findings: ['Probleem na software-update', 'Sloten niet bijgewerkt'],
+        manual: 'SALTO ProAccess — Database-export en update sloten'
+      },
+      RES_SALTO_SUPPORT_SOFTWARE: {
+        type: 'support',
+        heading: 'Support kan helpen — Software login',
+        desc: 'De klant kan niet inloggen op SALTO Space of ProAccess. Support kan het account resetten of de licentie controleren.',
+        findings: ['Login mislukt in beheersoftware'],
+        manual: 'SALTO Space / ProAccess — Accountbeheer'
+      },
+      RES_SALTO_SUPPORT_SYNC: {
+        type: 'support',
+        heading: 'Support kan helpen — Synchronisatiefout',
+        desc: 'Wijzigingen worden niet doorgevoerd naar de sloten. Support kan de synchronisatie herstellen via SALTO Space.',
+        findings: ['Toegangsrechten worden niet bijgewerkt in sloten'],
+        manual: 'SALTO Space — Synchronisatie en online update'
+      },
+      RES_SALTO_SUPPORT_NETWORK: {
+        type: 'support',
+        heading: 'Support kan helpen — Netwerkprobleem',
+        desc: 'Online sloten zijn niet bereikbaar maar er was geen modemwissel. Support kan de netwerkinstellingen op afstand controleren.',
+        findings: ['Online sloten offline', 'Geen recente netwerkwijziging'],
+        manual: 'SALTO — Netwerk- en connectiviteitsdiagnose'
+      },
+      RES_SALTO_SUPPORT_GENERAL: {
+        type: 'support',
+        heading: 'Support kan helpen — Algemeen',
+        desc: 'Geen specifiek probleem vastgesteld. Support kan via SALTO Space of ProAccess een volledige diagnose uitvoeren.',
+        findings: ['Onbepaald probleem', 'Verdere diagnose via SALTO software'],
+        manual: 'SALTO — Algemene systeemhandleiding'
+      }
+    }
   }
 };
 
-const MANUALS = {
-  risco: [
-    { naam: "LightSYS+ Gebruikershandleiding", modellen: "LightSYS / ProSYS", desc: "Instructies voor het uitlezen van het storingsgeheugen en basishandelingen." }
-  ],
-  bosch: [
-    { naam: "Bosch Solution Series Gids", modellen: "Solution 2000 / 3000 / 6000", desc: "Overzicht van systeemmeldingen en herstelprocedures bij spanningsuitval." }
-  ],
-  satel: [
-    { naam: "Satel Integra Handleiding", modellen: "Integra 32 / 64 / 128 / Versa", desc: "Gedetailleerde stappen voor het wissen van alarmen en sabotagevoorwaarden via DLOADX." }
-  ],
-  salto: [
-    { naam: "Salto Space Server Handleiding", modellen: "XS4 / CU42", desc: "Probleemoplossing bij database-disconnects en offline netwerkcomponenten." }
-  ]
-};
-
-// --- APPLICATION STATE ---
+// ══════════════════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════════════════
 let state = {
-  naam: "", tel: "", nr: "", sys: "", note: "",
-  merk: "",
-  selectedFout: null,
-  currentScreen: "info",
-  treeNode: "start",
-  history: []
+  brand: null,
+  currentNodeId: null,
+  history: [],         // [{nodeId, answer}]
+  result: null,
+  customer: {}
 };
 
-// --- DOM ELEMENTS ---
-const el = {
-  inNaam: document.getElementById("in-naam"),
-  inTel: document.getElementById("in-tel"),
-  inNr: document.getElementById("in-nr"),
-  inSys: document.getElementById("in-sys"),
-  inNote: document.getElementById("in-note"),
-  btnStart: document.getElementById("btn-start"),
-  foutWrap: document.getElementById("fout-wrap"),
-  foutGrid: document.getElementById("fout-grid"),
-  
-  // Sidebar
-  kEmpty: document.getElementById("k-empty"),
-  kInfo: document.getElementById("k-info"),
-  kMerkBadge: document.getElementById("k-merk-badge"),
-  kNaam: document.getElementById("k-naam"),
-  kTel: document.getElementById("k-tel"),
-  kNr: document.getElementById("k-nr"),
-  kSys: document.getElementById("k-sys"),
-  kNote: document.getElementById("k-note"),
-  kNoteRow: document.getElementById("k-note-row"),
-  progTxt: document.getElementById("prog-txt"),
-  progPct: document.getElementById("prog-pct"),
-  progBar: document.getElementById("prog-bar"),
-  logContainer: document.getElementById("log-container"),
-  
-  // Screens
-  scrInfo: document.getElementById("screen-info"),
-  scrQuestion: document.getElementById("screen-question"),
-  scrResult: document.getElementById("screen-result"),
-  
-  // Questions
-  qNum: document.getElementById("q-num"),
-  qText: document.getElementById("q-text"),
-  qHint: document.getElementById("q-hint"),
-  btnJa: document.getElementById("btn-ja"),
-  btnNee: document.getElementById("btn-nee"),
-  btnBack: document.getElementById("btn-back"),
-  merkStripContainer: document.getElementById("merk-strip-container"),
-  
-  // Result
-  resBadge: document.getElementById("res-badge"),
-  resTitle: document.getElementById("res-title"),
-  resDesc: document.getElementById("res-desc"),
-  resActions: document.getElementById("res-actions"),
-  resManualsBlock: document.getElementById("res-manuals-block"),
-  resManuals: document.getElementById("res-manuals"),
-  btnPdf: document.getElementById("btn-pdf"),
-  btnRestart: document.getElementById("btn-restart")
-};
+// ══════════════════════════════════════════════════════════
+//  NAVIGATIE
+// ══════════════════════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+}
 
-// --- INITIALIZATION & EVENTS ---
-function init() {
-  // Brand picker
-  document.querySelectorAll(".merk-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const merk = btn.getAttribute("data-merk");
-      selectMerk(merk);
-    });
-  });
-
-  // Inputs sync met sidebar
-  const syncInput = (inputEl, stateKey, sidebarEl) => {
-    inputEl.addEventListener("input", (e) => {
-      state[stateKey] = e.target.value;
-      sidebarEl.textContent = e.target.value || "—";
-      updateSidebarVisibility();
-    });
+function startFlow(brand) {
+  // Klantgegevens ophalen
+  state.customer = {
+    firstname: document.getElementById('inp-firstname').value.trim(),
+    lastname:  document.getElementById('inp-lastname').value.trim(),
+    phone:     document.getElementById('inp-phone').value.trim(),
+    custno:    document.getElementById('inp-custno').value.trim(),
+    address:   document.getElementById('inp-address').value.trim()
   };
-  
-  syncInput(el.inNaam, "naam", el.kNaam);
-  syncInput(el.inTel, "tel", el.kTel);
-  syncInput(el.inNr, "nr", el.kNr);
-  syncInput(el.inSys, "sys", el.kSys);
-  
-  el.inNote.addEventListener("input", (e) => {
-    state.note = e.target.value;
-    if (state.note) {
-      el.kNote.textContent = state.note;
-      el.kNoteRow.style.display = "block";
-    } else {
-      el.kNoteRow.style.display = "none";
-    }
-    updateSidebarVisibility();
-  });
 
-  el.btnStart.addEventListener("click", startCheck);
-  el.btnJa.addEventListener("click", () => handleAnswer("JA"));
-  el.btnNee.addEventListener("click", () => handleAnswer("NEE"));
-  el.btnBack.addEventListener("click", handleBack);
-  el.btnRestart.addEventListener("click", resetApp);
-  el.btnPdf.addEventListener("click", generatePDF);
-}
+  state.brand = brand;
+  state.history = [];
+  state.result = null;
+  state.currentNodeId = FLOWS[brand].start;
 
-// --- LOGIC FUNCTIONS ---
-function selectMerk(merk) {
-  state.merk = merk;
-  state.selectedFout = null;
-  
-  // Update UI buttons
-  document.querySelectorAll(".merk-btn").forEach(btn => {
-    const bMerk = btn.getAttribute("data-merk");
-    btn.className = "merk-btn"; // Reset
-    if (bMerk === merk) {
-      btn.classList.add(`active-${merk}`);
-    }
-  });
-
-  // Update sidebar badge
-  el.kMerkBadge.className = `k-merk-badge ${merk}`;
-  el.kMerkBadge.textContent = merk;
-  
-  // Render foutcodes
-  el.foutGrid.innerHTML = "";
-  const codes = FOUTCODES[merk] || [];
-  if (codes.length > 0) {
-    codes.forEach(c => {
-      const chip = document.createElement("button");
-      chip.className = "fout-chip";
-      chip.innerHTML = `<span class="fout-desc">${c.desc}</span>`;
-      chip.addEventListener("click", () => {
-        document.querySelectorAll(".fout-chip").forEach(ch => ch.classList.remove("selected"));
-        if (state.selectedFout?.id === c.id) {
-          state.selectedFout = null;
-        } else {
-          state.selectedFout = c;
-          chip.classList.add("selected");
-        }
-      });
-      el.foutGrid.appendChild(chip);
-    });
-    el.foutWrap.classList.add("visible");
-  } else {
-    el.foutWrap.classList.remove("visible");
-  }
-
-  el.btnStart.disabled = false;
-  updateSidebarVisibility();
-}
-
-function updateSidebarVisibility() {
-  const hasData = state.merk || state.naam || state.tel || state.nr || state.sys || state.note;
-  if (hasData) {
-    el.kEmpty.style.display = "none";
-    el.kInfo.style.display = "block";
-  } else {
-    el.kEmpty.style.display = "block";
-    el.kInfo.style.display = "none";
-  }
-}
-
-function startCheck() {
-  if (state.selectedFout) {
-    // Sla de boom over als er een directe foutcode is geselecteerd
-    showResultFromFoutcode(state.selectedFout);
-  } else {
-    // Start reguliere vragenboom
-    state.treeNode = "start";
-    state.history = [];
-    renderQuestion();
-    switchScreen("question");
-  }
-}
-
-function renderQuestion() {
-  const node = TREES[state.treeNode];
-  if (!node) return;
-
-  // Voortgang berekening (indicatief voor vragen)
-  const stepCount = state.history.length;
-  const pct = Math.min(15 + (stepCount * 25), 90);
-  updateProgress(`Vraag #${stepCount + 1}`, pct);
-
-  el.merkStripContainer.innerHTML = `<div class="merk-strip ${state.merk}">${state.merk}</div>`;
-  el.qNum.textContent = `Vraag #${stepCount + 1}`;
-  el.qText.textContent = node.q;
-  el.qHint.innerHTML = node.hint || "Geen extra hints beschikbaar.";
-  
-  el.btnBack.style.visibility = stepCount > 0 ? "visible" : "hidden";
-}
-
-function handleAnswer(answer) {
-  const node = TREES[state.treeNode];
-  state.history.push({ node: state.treeNode, q: node.q, a: answer });
-  
-  // Voeg toe aan sidebar log
-  appendLogItem(node.q, answer);
-
-  const nextNodeKey = answer === "JA" ? node.ja : node.nee;
-  const nextNode = TREES[nextNodeKey];
-
-  if (nextNode && nextNode.endpoint) {
-    showFinalResult(nextNode);
-  } else if (nextNode) {
-    state.treeNode = nextNodeKey;
-    renderQuestion();
-  } else {
-    resetApp();
-  }
-}
-
-function handleBack() {
-  if (state.history.length === 0) return;
-  const lastStep = state.history.pop();
-  state.treeNode = lastStep.node;
-  
-  // Verwijder laatste item uit log UI
-  if (el.logContainer.lastElementChild) {
-    el.logContainer.removeChild(el.logContainer.lastElementChild);
-  }
-  if (el.logContainer.children.length === 0) {
-    el.logContainer.innerHTML = '<div class="log-empty" id="log-empty">Nog geen stappen doorlopen.</div>';
-  }
-
+  document.getElementById('brand-pill').textContent = brand.charAt(0).toUpperCase() + brand.slice(1);
+  showScreen('questions');
   renderQuestion();
 }
 
-function appendLogItem(question, answer) {
-  const empty = document.getElementById("log-empty");
-  if (empty) empty.remove();
+function renderQuestion() {
+  const flow = FLOWS[state.brand];
+  const node = flow.nodes[state.currentNodeId];
 
-  const item = document.createElement("div");
-  item.className = "log-item";
-  item.innerHTML = `
-    <span class="log-q">${question}</span>
-    <span class="log-ant ${answer.toLowerCase()}">${answer}</span>
-  `;
-  el.logContainer.appendChild(item);
-  el.logContainer.scrollTop = el.logContainer.scrollHeight;
-}
+  if (!node || node.type) {
+    showResult(node);
+    return;
+  }
 
-function showResultFromFoutcode(fout) {
-  switchScreen("result");
-  updateProgress("Resultaat", 100);
+  // Totale stappen tellen (benadering via unieke vraag-nodes)
+  const questionNodes = Object.values(flow.nodes).filter(n => !n.type);
+  const idx = questionNodes.indexOf(node) + 1;
+  const total = questionNodes.length;
 
-  el.resBadge.className = `res-badge ${fout.type}`;
-  el.resBadge.textContent = fout.type;
-  el.resTitle.textContent = fout.desc;
-  el.resDesc.textContent = `Geselecteerde situatie vereist directe opvolging door support via remote beheer.`;
+  document.getElementById('step-label').textContent = `Stap ${idx} / ${total}`;
+  document.getElementById('progress-bar').style.width = ((idx / total) * 100) + '%';
+  document.getElementById('question-text').textContent = node.question;
 
-  el.resActions.innerHTML = "";
-  fout.actions.forEach((act, idx) => {
-    const li = document.createElement("li");
-    li.innerHTML = `<span class="action-num">${idx + 1}</span><span>${act}</span>`;
-    el.resActions.appendChild(li);
-  });
-
-  renderManuals();
-}
-
-function showFinalResult(endpointNode) {
-  switchScreen("result");
-  updateProgress("Resultaat", 100);
-
-  el.resBadge.className = `res-badge ${endpointNode.badge}`;
-  el.resBadge.textContent = endpointNode.badge;
-  el.resTitle.textContent = endpointNode.title;
-  el.resDesc.textContent = endpointNode.desc;
-
-  el.resActions.innerHTML = "";
-  endpointNode.actions.forEach((act, idx) => {
-    const li = document.createElement("li");
-    li.innerHTML = `<span class="action-num">${idx + 1}</span><span>${act}</span>`;
-    el.resActions.appendChild(li);
-  });
-
-  renderManuals();
-}
-
-function renderManuals() {
-  el.resManuals.innerHTML = "";
-  const mans = MANUALS[state.merk] || [];
-  if (mans.length > 0) {
-    el.resManualsBlock.style.display = "block";
-    mans.forEach(m => {
-      const div = document.createElement("div");
-      div.className = "man-item";
-      div.innerHTML = `
-        <div>
-          <div class="man-naam">${m.naam}</div>
-          <div class="man-modellen">${m.modellen}</div>
-          <div class="man-desc">${m.desc}</div>
-        </div>
-        <span style="font-size:1.2rem;">📖</span>
-      `;
-      el.resManuals.appendChild(div);
-    });
+  const hintEl = document.getElementById('question-hint');
+  if (node.hint) {
+    hintEl.textContent = node.hint;
+    hintEl.style.display = 'block';
   } else {
-    el.resManualsBlock.style.display = "none";
+    hintEl.style.display = 'none';
   }
 }
 
-function updateProgress(text, pct) {
-  el.progTxt.textContent = text;
-  el.progPct.textContent = `${pct}%`;
-  el.progBar.style.width = `${pct}%`;
+function answer(yes) {
+  const flow = FLOWS[state.brand];
+  const node = flow.nodes[state.currentNodeId];
+
+  state.history.push({ nodeId: state.currentNodeId, answer: yes });
+  state.currentNodeId = yes ? node.yes : node.no;
+  renderQuestion();
 }
 
-function switchScreen(screenKey) {
-  el.scrInfo.classList.remove("active");
-  el.scrQuestion.classList.remove("active");
-  el.scrResult.classList.remove("active");
-
-  if (screenKey === "info") el.scrInfo.classList.add("active");
-  if (screenKey === "question") el.scrQuestion.classList.add("active");
-  if (screenKey === "result") el.scrResult.classList.add("active");
-  
-  state.currentScreen = screenKey;
+function goBack() {
+  if (state.history.length === 0) { resetTool(); return; }
+  const prev = state.history.pop();
+  state.currentNodeId = prev.nodeId;
+  if (state.result) { state.result = null; showScreen('questions'); }
+  renderQuestion();
 }
 
-function resetApp() {
-  state = {
-    naam: "", tel: "", nr: "", sys: "", note: "",
-    merk: "",
-    selectedFout: null,
-    currentScreen: "info",
-    treeNode: "start",
-    history: []
-  };
+function showResult(node) {
+  state.result = node;
 
-  // Reset inputs
-  el.inNaam.value = "";
-  el.inTel.value = "";
-  el.inNr.value = "";
-  el.inSys.value = "";
-  el.inNote.value = "";
+  document.getElementById('result-title').textContent =
+    state.brand.charAt(0).toUpperCase() + state.brand.slice(1) + ' — Diagnose voltooid';
 
-  // Reset sidebar text
-  el.kNaam.textContent = "—";
-  el.kTel.textContent = "—";
-  el.kNr.textContent = "—";
-  el.kSys.textContent = "—";
-  el.kNote.textContent = "—";
-  el.kNoteRow.style.display = "none";
-  el.logContainer.innerHTML = '<div class="log-empty" id="log-empty">Nog geen stappen doorlopen.</div>';
+  const banner = document.getElementById('result-banner');
+  banner.className = 'result-banner ' + (node.type === 'technician' ? 'technician' : 'support');
+  document.getElementById('result-icon').textContent = node.type === 'technician' ? '🔧' : '📞';
+  document.getElementById('result-heading').textContent = node.heading;
+  document.getElementById('result-desc').textContent = node.desc;
 
-  // UI elements hidden
-  el.foutWrap.classList.remove("visible");
-  el.btnStart.disabled = true;
-  
-  document.querySelectorAll(".merk-btn").forEach(btn => {
-    btn.className = "merk-btn";
-  });
+  const findingsEl = document.getElementById('result-findings');
+  findingsEl.innerHTML = node.findings.map(f =>
+    `<div class="detail-item">${f}</div>`
+  ).join('');
 
-  updateSidebarVisibility();
-  updateProgress("Niet gestart", 0);
-  switchScreen("info");
+  if (node.manual) {
+    document.getElementById('result-manual-block').style.display = 'block';
+    document.getElementById('result-manual-text').textContent = node.manual;
+  } else {
+    document.getElementById('result-manual-block').style.display = 'none';
+  }
+
+  showScreen('result');
 }
 
-// --- PDF GENERATOR FUNCTION ---
+function resetTool() {
+  state = { brand: null, currentNodeId: null, history: [], result: null, customer: {} };
+  showScreen('start');
+}
+
+// ══════════════════════════════════════════════════════════
+//  PDF GENEREREN
+// ══════════════════════════════════════════════════════════
 function generatePDF() {
   const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
+  const doc = new jsPDF({ unit: 'mm', format: 'a4' });
 
-  doc.setFillColor(11, 29, 58);
-  doc.rect(0, 0, 210, 40, "F");
+  const RED    = [200, 16, 46];
+  const BLACK  = [10, 10, 10];
+  const GREY   = [240, 240, 240];
+  const DARK   = [30, 30, 30];
+  const WHITE  = [255, 255, 255];
+  const YELLOW = [245, 197, 24];
 
-  doc.setTextColor(255, 255, 255);
-  doc.setFont("Helvetica", "bold");
-  doc.setFontSize(22);
-  doc.text("Inbraakveilig Supportcheck", 15, 25);
+  const W = 210;
+  const MARGIN = 18;
+  const CONTENT = W - MARGIN * 2;
 
-  doc.setTextColor(30, 45, 72);
-  doc.setFontSize(14);
-  doc.text("Klant- en Storingsrapport", 15, 55);
+  // Header balk
+  doc.setFillColor(...RED);
+  doc.rect(0, 0, W, 28, 'F');
+  doc.setTextColor(...WHITE);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(18);
+  doc.text('INBRAAKVEILIG', MARGIN, 13);
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'normal');
+  doc.text('Supportcheck — Diagnoserapport', MARGIN, 20);
 
-  doc.setLineWidth(0.5);
-  doc.setDrawColor(212, 218, 234);
-  doc.line(15, 58, 195, 58);
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('nl-BE') + '  ' + now.toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' });
+  doc.setFontSize(8);
+  doc.text(dateStr, W - MARGIN, 13, { align: 'right' });
 
-  doc.setFontSize(10);
-  doc.setFont("Helvetica", "bold");
-  doc.text("Klantnaam:", 15, 70);
-  doc.text("Telefoon:", 15, 78);
-  doc.text("Klantnummer:", 110, 70);
-  doc.text("Systeem Merk:", 110, 78);
+  let y = 36;
 
-  doc.setFont("Helvetica", "normal");
-  doc.text(state.naam || "Onbekend", 45, 70);
-  doc.text(state.tel || "Onbekend", 45, 78);
-  doc.text(state.nr || "Onbekend", 140, 70);
-  doc.text(state.merk ? state.merk.toUpperCase() : "Onbekend", 140, 78);
+  // Klantgegevens
+  const cust = state.customer;
+  const custName = [cust.firstname, cust.lastname].filter(Boolean).join(' ') || '—';
 
-  if (state.note) {
-    doc.setFont("Helvetica", "bold");
-    doc.text("Interne Notitie:", 15, 88);
-    doc.setFont("Helvetica", "normal");
-    doc.text(state.note, 45, 88);
-  }
+  doc.setFillColor(...GREY);
+  doc.roundedRect(MARGIN, y, CONTENT, 32, 2, 2, 'F');
+  doc.setTextColor(...DARK);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(8);
+  doc.text('KLANTGEGEVENS', MARGIN + 4, y + 6);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
 
-  doc.line(15, 94, 195, 94);
+  const custLines = [
+    ['Naam',       custName],
+    ['Telefoon',   cust.phone   || '—'],
+    ['Klantnr.',   cust.custno  || '—'],
+    ['Adres',      cust.address || '—']
+  ];
 
-  doc.setFont("Helvetica", "bold");
-  doc.setFontSize(13);
-  doc.text("Diagnose Resultaat", 15, 105);
-
-  doc.setFontSize(11);
-  doc.text(el.resTitle.textContent, 15, 115);
-  doc.setFont("Helvetica", "normal");
-  
-  const splitDesc = doc.splitTextToSize(el.resDesc.textContent, 180);
-  doc.text(splitDesc, 15, 122);
-
-  let yPos = 140;
-  doc.setFont("Helvetica", "bold");
-  doc.setFontSize(13);
-  doc.text("Vereiste Acties", 15, yPos);
-  yPos += 8;
-
-  doc.setFont("Helvetica", "normal");
-  doc.setFontSize(10);
-  const actionItems = el.resActions.querySelectorAll("li");
-  actionItems.forEach((li, index) => {
-    const txt = `${index + 1}. ${li.innerText.replace(/^\d+/, '').trim()}`;
-    const splitTxt = doc.splitTextToSize(txt, 180);
-    doc.text(splitTxt, 15, yPos);
-    yPos += (splitTxt.length * 6);
+  let cy = y + 12;
+  custLines.forEach(([label, val]) => {
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...DARK);
+    doc.text(label + ':', MARGIN + 4, cy);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(60, 60, 60);
+    doc.text(val, MARGIN + 28, cy);
+    cy += 5;
   });
 
-  doc.save(`Supportcheck_${state.nr || "Rapport"}.pdf`);
+  // Merk label rechts
+  doc.setFillColor(...RED);
+  doc.roundedRect(W - MARGIN - 30, y + 4, 30, 8, 2, 2, 'F');
+  doc.setTextColor(...WHITE);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(9);
+  doc.text((state.brand || '').toUpperCase(), W - MARGIN - 15, y + 9.5, { align: 'center' });
+
+  y += 38;
+
+  // Resultaat banner
+  const isTech = state.result && state.result.type === 'technician';
+  doc.setFillColor(...(isTech ? YELLOW : RED));
+  doc.roundedRect(MARGIN, y, CONTENT, 18, 2, 2, 'F');
+  doc.setTextColor(...(isTech ? [20, 20, 20] : WHITE));
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(12);
+  doc.text(state.result ? state.result.heading : '—', MARGIN + 4, y + 8);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(8.5);
+  const descLines = doc.splitTextToSize(state.result ? state.result.desc : '', CONTENT - 8);
+  doc.text(descLines, MARGIN + 4, y + 14);
+
+  y += 22 + (descLines.length - 1) * 4;
+
+  // Bevindingen
+  doc.setFillColor(...GREY);
+  doc.roundedRect(MARGIN, y, CONTENT, 7, 2, 2, 'F');
+  doc.setTextColor(...DARK);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(8);
+  doc.text('VASTGESTELD PROBLEEM', MARGIN + 4, y + 5);
+  y += 10;
+
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
+  doc.setTextColor(40, 40, 40);
+
+  if (state.result && state.result.findings) {
+    state.result.findings.forEach(f => {
+      doc.setTextColor(...RED);
+      doc.text('›', MARGIN + 4, y);
+      doc.setTextColor(40, 40, 40);
+      doc.text(f, MARGIN + 10, y);
+      y += 6;
+    });
+  }
+
+  y += 4;
+
+  // Handleiding
+  if (state.result && state.result.manual) {
+    doc.setFillColor(...GREY);
+    doc.roundedRect(MARGIN, y, CONTENT, 7, 2, 2, 'F');
+    doc.setTextColor(...DARK);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8);
+    doc.text('AANBEVOLEN HANDLEIDING', MARGIN + 4, y + 5);
+    y += 10;
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9);
+    doc.setTextColor(40, 40, 40);
+    doc.text('› ' + state.result.manual, MARGIN + 4, y);
+    y += 10;
+  }
+
+  // Gestelde vragen
+  y += 2;
+  doc.setFillColor(...GREY);
+  doc.roundedRect(MARGIN, y, CONTENT, 7, 2, 2, 'F');
+  doc.setTextColor(...DARK);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(8);
+  doc.text('DOORLOPEN VRAGEN', MARGIN + 4, y + 5);
+  y += 10;
+
+  const flow = FLOWS[state.brand];
+  state.history.forEach((h, i) => {
+    const n = flow ? flow.nodes[h.nodeId] : null;
+    if (!n || n.type) return;
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...RED);
+    doc.setFontSize(8);
+    doc.text(`${i + 1}.`, MARGIN + 4, y);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(40, 40, 40);
+    const qLines = doc.splitTextToSize(n.question, CONTENT - 20);
+    doc.text(qLines, MARGIN + 10, y);
+    const ans = h.answer ? 'JA' : 'NEE';
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(h.answer ? 80 : 150, h.answer ? 120 : 80, h.answer ? 80 : 80);
+    doc.text(ans, W - MARGIN - 2, y, { align: 'right' });
+    doc.setTextColor(40, 40, 40);
+    y += 5 + (qLines.length - 1) * 4;
+    if (y > 270) { doc.addPage(); y = 20; }
+  });
+
+  // Footer
+  doc.setFillColor(...RED);
+  doc.rect(0, 285, W, 12, 'F');
+  doc.setTextColor(...WHITE);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7.5);
+  doc.text('Inbraakveilig · Intern gebruik · Gegenereerd door Supportcheck', W / 2, 291, { align: 'center' });
+
+  const fname = [cust.lastname, cust.firstname].filter(Boolean).join('_') || 'klant';
+  doc.save(`Supportcheck_${fname}_${state.brand}.pdf`);
+  showToast('PDF gegenereerd ✔');
 }
 
-// Start app on load
-window.addEventListener("DOMContentLoaded", init);
+// ══════════════════════════════════════════════════════════
+//  E-MAIL SAMENSTELLEN
+// ══════════════════════════════════════════════════════════
+function sendEmail() {
+  const cust = state.customer;
+  const res  = state.result;
+  const brand = state.brand ? state.brand.charAt(0).toUpperCase() + state.brand.slice(1) : '';
+
+  const custName = [cust.firstname, cust.lastname].filter(Boolean).join(' ') || 'klant';
+  const isTech   = res && res.type === 'technician';
+
+  const subject = isTech
+    ? `[Technieker nodig] ${brand} — ${custName}`
+    : `[Support] ${brand} — ${custName}`;
+
+  const findings = res && res.findings
+    ? res.findings.map(f => `  • ${f}`).join('\n')
+    : '  —';
+
+  const body =
+`Diagnose Supportcheck — ${brand}
+Datum: ${new Date().toLocaleDateString('nl-BE')} ${new Date().toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' })}
+
+KLANT
+Naam:       ${custName}
+Telefoon:   ${cust.phone   || '—'}
+Klantnr.:   ${cust.custno  || '—'}
+Adres:      ${cust.address || '—'}
+
+RESULTAAT
+${res ? res.heading : '—'}
+${res ? res.desc : '—'}
+
+BEVINDINGEN
+${findings}
+
+HANDLEIDING
+${res && res.manual ? res.manual : '—'}
+
+---
+Verzonden via Supportcheck · Inbraakveilig`;
+
+  window.location.href =
+    'mailto:?subject=' + encodeURIComponent(subject) +
+    '&body='    + encodeURIComponent(body);
+
+  showToast('E-mailclient geopend ✔');
+}
+
+// ══════════════════════════════════════════════════════════
+//  TOAST
+// ══════════════════════════════════════════════════════════
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
 </script>
 </body>
 </html>
