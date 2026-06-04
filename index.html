@@ -802,11 +802,6 @@ body {
           <textarea id="f-note" placeholder="Bijv. klant is moeilijk bereikbaar, heeft al gebeld gisteren…"></textarea>
         </div>
 
-        <div class="fg">
-          <label for="f-code">Zichtbare foutcode (optioneel — noteer exact wat de klant ziet)</label>
-          <input type="text" id="f-code" placeholder="bijv. T5, E301, Accu Laag, Zone 3 Storing...">
-        </div>
-
         <button class="btn btn-navy" onclick="startWizard()">▶&nbsp; Start supportcheck</button>
       </div>
     </div>
@@ -897,24 +892,24 @@ const FOUTCODES = {
   risco: [
     { code:"T1",  desc:"Zone Alarm",          oplossing:"Zone in alarm. Controleer zone-instellingen en detector.",  urgentie:"support" },
     { code:"T2",  desc:"Zone Storing",         oplossing:"Verbindingsprobleem met detector. Bekabeling controleren.", urgentie:"support" },
-    { code:"T3",  desc:"Sabotage Zone",        oplossing:"Cover van detector open of bekabeling onderbroken.",        urgentie:"technician" },
+    { code:"T3",  desc:"Sabotage Zone",        oplossing:"Cover van detector open of bekabeling onderbroken.",        urgentie:"support" },
     { code:"T4",  desc:"Stroomstoring AC",     oplossing:"Netstroom weggevallen. Accu neemt over.",                  urgentie:"support" },
     { code:"T5",  desc:"Accu Laag",            oplossing:"Noodaccu bijna leeg. Vervangen aanbevolen.",               urgentie:"technician" },
     { code:"T6",  desc:"Lijn Storing",         oplossing:"Communicatiestoring (GSM/IP). Signaal controleren.",       urgentie:"support" },
-    { code:"T7",  desc:"Sabotage Centraal",    oplossing:"Cover van centrale open of verwijderd.",                   urgentie:"technician" },
+    { code:"T7",  desc:"Sabotage Centraal",    oplossing:"Cover van centrale open of verwijderd.",                   urgentie:"support" },
     { code:"T8",  desc:"Klok Storing",         oplossing:"Datum/tijd verloren. Resetten via paneel.",                urgentie:"support" },
-    { code:"T9",  desc:"Brand Alarm",          oplossing:"Rookmelder geactiveerd. Verificatie vereist.",             urgentie:"technician" },
-    { code:"T10", desc:"Panic Alarm",          oplossing:"Paniekknop ingedrukt. Klant contacteren.",                 urgentie:"technician" },
-    { code:"T11", desc:"Inbraak Alarm",        oplossing:"Bewegingssensor getriggerd.",                              urgentie:"technician" },
+    { code:"T9",  desc:"Brand Alarm",          oplossing:"Rookmelder geactiveerd. Verificatie vereist.",             urgentie:"support" },
+    { code:"T10", desc:"Panic Alarm",          oplossing:"Paniekknop ingedrukt. Klant contacteren.",                 urgentie:"support" },
+    { code:"T11", desc:"Inbraak Alarm",        oplossing:"Bewegingssensor getriggerd.",                              urgentie:"support" },
     { code:"T12", desc:"Zone Bypass",          oplossing:"Zone overgeslagen bij inschakel.",                         urgentie:"support" },
   ],
   bosch: [
-    { code:"E100", desc:"Inbraakmelding",       oplossing:"Detector heeft beweging gemeld.",                         urgentie:"technician" },
-    { code:"E200", desc:"Brand Alarm",          oplossing:"Rookdetector geactiveerd.",                               urgentie:"technician" },
+    { code:"E100", desc:"Inbraakmelding",       oplossing:"Detector heeft beweging gemeld.",                         urgentie:"support" },
+    { code:"E200", desc:"Brand Alarm",          oplossing:"Rookdetector geactiveerd.",                               urgentie:"support" },
     { code:"E301", desc:"AC Stroomstoring",     oplossing:"Netstroom onderbroken, accu actief.",                     urgentie:"support" },
     { code:"E302", desc:"Accu Laag",            oplossing:"Accu onder minimumspanning.",                             urgentie:"technician" },
     { code:"E333", desc:"Zone Storing",         oplossing:"Sensorverbinding verbroken of open.",                     urgentie:"support" },
-    { code:"E341", desc:"Sabotage Detector",    oplossing:"Detectorkap geopend.",                                    urgentie:"technician" },
+    { code:"E341", desc:"Sabotage Detector",    oplossing:"Detectorkap geopend.",                                    urgentie:"support" },
     { code:"E351", desc:"Lijn Onderbroken",     oplossing:"Communicatielijn met centrale verbroken.",                urgentie:"support" },
     { code:"E381", desc:"Supervisie Storing",   oplossing:"Draadloze detector reageert niet.",                       urgentie:"support" },
     { code:"E401", desc:"Uitschakeling",        oplossing:"Systeem uitgeschakeld met code.",                         urgentie:"support" },
@@ -923,17 +918,17 @@ const FOUTCODES = {
     { code:"E621", desc:"Code Fout",            oplossing:"Verkeerde code ingegeven (max pogingen).",                urgentie:"support" },
   ],
   satel: [
-    { code:"AL",   desc:"Alarm Zone",           oplossing:"Zone in alarm conditie.",                                 urgentie:"technician" },
-    { code:"TR",   desc:"Sabotage",             oplossing:"Tamper-contact geopend.",                                 urgentie:"technician" },
+    { code:"AL",   desc:"Alarm Zone",           oplossing:"Zone in alarm conditie.",                                 urgentie:"support" },
+    { code:"TR",   desc:"Sabotage",             oplossing:"Tamper-contact geopend.",                                 urgentie:"support" },
     { code:"ST",   desc:"Zone Storing",         oplossing:"Zone open/verbroken buiten alarmtijd.",                   urgentie:"support" },
     { code:"AC",   desc:"Stroomstoring",        oplossing:"230V netvoeding weg.",                                    urgentie:"support" },
     { code:"BA",   desc:"Accu Laag",            oplossing:"Accuspanning te laag.",                                   urgentie:"technician" },
     { code:"NO",   desc:"Geen Communicatie",    oplossing:"Verbinding met meldkamer verbroken.",                     urgentie:"support" },
-    { code:"SC",   desc:"Sabotage Centraal",    oplossing:"Kast van centrale geopend.",                              urgentie:"technician" },
+    { code:"SC",   desc:"Sabotage Centraal",    oplossing:"Kast van centrale geopend.",                              urgentie:"support" },
     { code:"CI",   desc:"CLIP Storing",         oplossing:"Telefoonfout of SIM-probleem.",                           urgentie:"support" },
-    { code:"PS",   desc:"Voedingsstoring",      oplossing:"AUX-voeding te laag of overbelast.",                      urgentie:"technician" },
+    { code:"PS",   desc:"Voedingsstoring",      oplossing:"AUX-voeding te laag of overbelast.",                      urgentie:"support" },
     { code:"IN",   desc:"INTEGRA Initialisatie",oplossing:"Centrale herstart/reset uitgevoerd.",                     urgentie:"support" },
-    { code:"RD",   desc:"RD Storing",           oplossing:"Probleem met draadloze ABAX-module.",                     urgentie:"technician" },
+    { code:"RD",   desc:"RD Storing",           oplossing:"Probleem met draadloze ABAX-module.",                     urgentie:"support" },
     { code:"WR",   desc:"Klok Storing",         oplossing:"Tijdsinstelling verloren gegaan.",                        urgentie:"support" },
   ]
 };
@@ -1916,7 +1911,6 @@ const RESULTS = {
 let st = {
   merk: null,
   gekozenFoutcode: null,
-  zichtbareCode: null,
   klant: {},
   huidigQ: null,
   log: [],
@@ -1982,7 +1976,6 @@ function startWizard() {
     sys:  document.getElementById('f-sys').value.trim()  || "—",
     note: document.getElementById('f-note').value.trim() || ""
   };
-  st.zichtbareCode = document.getElementById('f-code').value.trim() || null;
 
   // sidebar
   document.getElementById('k-empty').style.display  = 'none';
@@ -2169,8 +2162,8 @@ function closeModal()   { document.getElementById('overlay').classList.remove('o
 // ── RESET ──
 function resetWizard() {
   closeModal();
-  st = { merk:null, gekozenFoutcode:null, zichtbareCode: null, klant:{}, huidigQ:null, log:[], history:[], stap:0, result:null };
-  ['f-naam','f-tel','f-nr','f-sys','f-note','f-code'].forEach(id => { document.getElementById(id).value = ''; });
+  st = { merk:null, gekozenFoutcode:null, klant:{}, huidigQ:null, log:[], history:[], stap:0, result:null };
+  ['f-naam','f-tel','f-nr','f-sys','f-note'].forEach(id => { document.getElementById(id).value = ''; });
   document.getElementById('f-sys').value = '';
   document.querySelectorAll('.merk-btn').forEach(b => b.className = 'merk-btn');
   document.getElementById('fout-wrap').classList.remove('visible');
@@ -2194,7 +2187,7 @@ function generatePDF() {
   const merkLabel = MERK_LABEL[st.merk] || '—';
 
   // koptekst
-  doc.setFillColor(192, 57, 43);
+  doc.setFillColor(11, 29, 58);
   doc.rect(0, 0, 210, 30, 'F');
   doc.setTextColor(255,255,255);
   doc.setFontSize(16); doc.setFont('helvetica','bold');
@@ -2217,9 +2210,9 @@ function generatePDF() {
   const sectie = (titel) => {
     if (y > 265) { doc.addPage(); y = 15; }
     doc.setFontSize(9); doc.setFont('helvetica','bold');
-    doc.setTextColor(192, 57, 43);
+    doc.setTextColor(11,29,58);
     doc.text(titel, 14, y); y += 2.5;
-    doc.setDrawColor(192, 57, 43);
+    doc.setDrawColor(190,200,220);
     doc.line(14, y, 196, y); y += 6;
     doc.setTextColor(30,45,72);
   };
@@ -2238,11 +2231,18 @@ function generatePDF() {
   if (c.note) rij('Notitie', c.note);
   y += 4;
 
-  if (st.zichtbareCode) {
-    sectie('ZICHTBARE FOUTCODE');
-    doc.setFontSize(11); doc.setFont('helvetica','bold'); doc.setTextColor(192,57,43);
-    doc.text(st.zichtbareCode, 14, y); y += 8;
-    doc.setTextColor(30,45,72); doc.setFontSize(8.5); doc.setFont('helvetica','normal');
+  if (st.gekozenFoutcode && FOUTCODES[st.merk]) {
+    const fc = FOUTCODES[st.merk].find(f => f.code === st.gekozenFoutcode);
+    if (fc) {
+      sectie('GEMELDE FOUTCODE');
+      doc.setFillColor(11,29,58); doc.roundedRect(14, y-4, 60, 14, 2, 2, 'F');
+      doc.setTextColor(255,255,255); doc.setFontSize(12); doc.setFont('helvetica','bold');
+      doc.text(fc.code, 44, y+4, { align:'center' });
+      doc.setTextColor(30,45,72); doc.setFontSize(8.5); doc.setFont('helvetica','normal');
+      doc.text(fc.desc, 80, y); y += 5;
+      const opl = doc.splitTextToSize(fc.oplossing, 110);
+      doc.text(opl, 80, y); y += opl.length * 4.5 + 8;
+    }
   }
 
   sectie('DIAGNOSE RESULTAAT');
@@ -2251,7 +2251,7 @@ function generatePDF() {
   const tcol = type_colors[r.type] || [0,0,0];
   doc.setFontSize(11); doc.setFont('helvetica','bold'); doc.setTextColor(...tcol);
   doc.text(type_labels[r.type] || '', 14, y); y += 7;
-  doc.setFontSize(10); doc.setTextColor(30,45,72);
+  doc.setFontSize(10); doc.setTextColor(11,29,58);
   const titleLines = doc.splitTextToSize(r.title.replace(/⚠ /g,''), 180);
   doc.text(titleLines, 14, y); y += titleLines.length * 5 + 4;
   doc.setFontSize(8.5); doc.setFont('helvetica','normal'); doc.setTextColor(60,75,100);
@@ -2260,9 +2260,9 @@ function generatePDF() {
   if (r.merkNote) {
     const mn = r.merkNote.replace(/[📡💻🔧🔑⚡🐾📱🔐🔍📌]/gu, '');
     const mnLines = doc.splitTextToSize(mn.trim(), 178);
-    doc.setFillColor(255, 240, 240);
+    doc.setFillColor(240,244,252);
     doc.roundedRect(12, y-2, 184, mnLines.length * 4.5 + 5, 2, 2, 'F');
-    doc.setTextColor(80, 30, 30); doc.text(mnLines, 16, y+2); y += mnLines.length * 4.5 + 8;
+    doc.setTextColor(28,54,96); doc.text(mnLines, 16, y+2); y += mnLines.length * 4.5 + 8;
   }
   y += 2;
 
@@ -2317,44 +2317,46 @@ function sendEmail() {
   const r = st.result;
   const merkLabel = MERK_LABEL[st.merk] || '—';
   const nu = new Date().toLocaleString('nl-BE');
+  const sep = '─'.repeat(44);
 
-  const typeLabel = { support:'SUPPORT', technician:'TECHNIEKER', urgent:'URGENT TECHNIEKER', mech:'MECH TECHNIEKER', electric:'ELECTRO TECHNIEKER' };
+  const typeLabel = { support:'SUPPORT DIENST', technician:'TECHNIEKER NODIG', urgent:'URGENT — TECHNIEKER', mech:'MECHANISCHE TECHNIEKER', electric:'ELEKTROTECHNISCHE TECHNIEKER' };
 
-  let body = `INBRAAKVEILIG — SUPPORT TICKET\n`;
-  body += `Gegenereerd: ${nu}\n`;
-  body += `════════════════════════════════════════════════════════\n\n`;
+  let body = `Beste,\n\nHieronder vindt u het supportrapport voor ${c.naam}.\n\n`;
+  body += `KLANTGEGEVENS\n${sep}\n`;
+  body += `Naam:         ${c.naam}\nTelefoon:     ${c.tel}\nKlantnummer:  ${c.nr}\nSysteem:      ${c.sys}\nMerk:         ${merkLabel}\n`;
+  if (c.note) body += `Notitie:      ${c.note}\n`;
 
-  body += `KLANT\n`;
-  body += `Naam: ${c.naam}  |  Tel: ${c.tel}\n`;
-  body += `Klantnr: ${c.nr}  |  Systeem: ${c.sys}\n`;
-  body += `Merk: ${merkLabel}\n`;
-  if (c.note) body += `Notitie: ${c.note}\n`;
-
-  if (st.zichtbareCode) {
-    body += `\nZICHTBARE FOUTCODE (klant ziet dit): ${st.zichtbareCode}\n`;
+  if (st.gekozenFoutcode && FOUTCODES[st.merk]) {
+    const fc = FOUTCODES[st.merk].find(f => f.code === st.gekozenFoutcode);
+    if (fc) body += `\nGEMELDE FOUTCODE\n${sep}\nCode: ${fc.code} — ${fc.desc}\nToelichting: ${fc.oplossing}\n`;
   }
 
-  body += `\nRESULTAAT\n`;
-  body += `Type: ${typeLabel[r.type] || r.type}\n`;
-  body += `Titel: ${r.title}\n`;
-  if (r.desc) body += `Korte samenvatting: ${r.desc.substring(0, 300)}${r.desc.length > 300 ? '...' : ''}\n`;
+  body += `\nDIAGNOSE RESULTAAT\n${sep}\n`;
+  body += `Aanbeveling: ${typeLabel[r.type] || ''}\n${r.title}\n\n${r.desc}\n`;
+  if (r.merkNote) body += `\nOpmerking: ${r.merkNote.replace(/[📡💻🔧🔑⚡🐾📱🔐🔍📌]/gu,'').trim()}\n`;
 
-  body += `\nAANBEVOLEN ACTIES\n`;
+  body += `\nAANBEVOLEN ACTIES\n${sep}\n`;
   r.actions.forEach((a,i) => { body += `${i+1}. ${a}\n`; });
 
-  body += `\nVRAGENLOG (antwoorden klant)\n`;
-  st.log.forEach((it,i) => { body += `${i+1}. ${it.vraag} → ${it.antwoord.toUpperCase()}\n`; });
-
-  if (st.merk === 'risco' && r.manuals && r.manuals.length > 0) {
-    body += `\nRELEVANTE HANDLEIDINGEN\n`;
-    r.manuals.forEach(m => { body += `• ${m.text}\n`; });
+  body += `\nHANDLEIDINGEN\n${sep}\n`;
+  r.manuals.forEach(m => { body += `→ ${m.text}\n`; });
+  if (st.merk === 'risco') {
+    body += `\nBIJGEVOEGDE HANDLEIDINGEN (Risco)\n${sep}\n`;
+    body += `De volgende handleidingen zijn beschikbaar als PDF via de Supportcheck tool:\n`;
+    const mKeys = getRiscoManuals();
+    mKeys.forEach(k => {
+      const m = MANUALS[k];
+      body += `→ ${m.naam} (${m.modellen})\n`;
+    });
+    body += `\nOpen de Supportcheck tool, ga naar het resultaatscherm en klik op 'Download PDF' om de handleiding te downloaden en als bijlage mee te sturen.\n`;
   }
 
-  body += `\n════════════════════════════════════════════════════════\n`;
-  body += `Intern document — Supportcheck Inbraakveilig\n`;
-  body += `Stuur dit ticket door naar de juiste support engineer.`;
+  body += `\nVRAGENLOG\n${sep}\n`;
+  st.log.forEach((it,i) => { body += `${i+1}. ${it.vraag}  →  ${it.antwoord.toUpperCase()}\n`; });
 
-  const subject = `[Support] ${c.naam} — ${merkLabel} — ${typeLabel[r.type]||'SUPPORT'}`;
+  body += `\n${sep}\nGegenereerd op: ${nu}\nInbraakveilig Supportcheck — Intern gebruik\n`;
+
+  const subject = `[Inbraakveilig] Support ${c.naam} — ${merkLabel} — ${typeLabel[r.type]||''}`;
   window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 
