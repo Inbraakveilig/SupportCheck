@@ -739,6 +739,11 @@ body {
       </div>
     </div>
 
+    <div class="scard" id="s-fc-sidebar" style="display:none">
+      <div class="sc-label">Gekozen foutcode</div>
+      <div id="fc-sidebar-content"></div>
+    </div>
+
   </aside>
 
   <!-- ── MAIN ── -->
@@ -760,6 +765,12 @@ body {
           <button class="merk-btn" id="mb-satel"    onclick="kiesMerk('satel')"><div class="merk-ico"><img src="https://www.satel.pl/pub/images/logo-satel.png" onerror="this.style.display='none';this.nextSibling.style.display='inline'" alt="Satel" style="height:24px;width:auto;max-width:70px;object-fit:contain"><span style="display:none;font-size:1.2rem;font-weight:800;color:var(--satel)">S</span></div>Satel<div class="merk-dot"></div></button>
           <button class="merk-btn" id="mb-salto"    onclick="kiesMerk('salto')"><div class="merk-ico" style="font-size:.7rem;font-weight:900;letter-spacing:-.02em;color:var(--salto)">SALTO</div>Toegang<div class="merk-dot"></div></button>
           <button class="merk-btn" id="mb-onbekend" onclick="kiesMerk('onbekend')"><div class="merk-ico" style="font-size:1.6rem">❓</div>Onbekend<div class="merk-dot"></div></button>
+        </div>
+
+        <!-- Foutcode picker -->
+        <div class="fout-wrap" id="fout-wrap">
+          <div class="fout-title" id="fout-wrap-title">Bekende foutcodes — selecteer indien van toepassing</div>
+          <div class="fout-grid" id="fout-grid"></div>
         </div>
 
         <div class="div"></div>
@@ -791,6 +802,11 @@ body {
           <textarea id="f-note" placeholder="Bijv. klant is moeilijk bereikbaar, heeft al gebeld gisteren…"></textarea>
         </div>
 
+        <div class="fg">
+          <label for="f-code">Zichtbare foutcode (optioneel — noteer exact wat de klant ziet)</label>
+          <input type="text" id="f-code" placeholder="bijv. T5, E301, Accu Laag, Zone 3 Storing...">
+        </div>
+
         <button class="btn btn-navy" onclick="startWizard()">▶&nbsp; Start supportcheck</button>
       </div>
     </div>
@@ -804,6 +820,8 @@ body {
           <div class="ph-sub">Stel de vragen samen met de klant en klik <strong>Ja</strong> of <strong>Nee</strong>.</div>
         </div>
       </div>
+
+      <div class="fc-check" id="fc-check-box"></div>
 
       <div class="q-card">
         <div class="q-num"  id="q-num">Vraag 1</div>
@@ -827,6 +845,7 @@ body {
 
       <div class="res-header">
         <div class="res-badge" id="res-badge"></div>
+        <div id="res-fc-box" style="display:none"></div>
         <div class="res-title" id="res-title"></div>
         <div class="res-desc"  id="res-desc"></div>
         <div class="res-merk-note" id="res-merk-note" style="display:none"></div>
@@ -835,6 +854,11 @@ body {
       <div class="res-block">
         <div class="res-block-title">Aanbevolen Acties</div>
         <ul class="action-list" id="res-actions"></ul>
+      </div>
+
+      <div class="res-block" id="res-foutcodes-block" style="display:none">
+        <div class="res-block-title">Foutcodes Referentie — <span id="res-fc-merk"></span></div>
+        <table class="foutcode-table" id="res-foutcodes-table"></table>
       </div>
 
       <div class="res-block">
@@ -1892,6 +1916,7 @@ const RESULTS = {
 let st = {
   merk: null,
   gekozenFoutcode: null,
+  zichtbareCode: null,
   klant: {},
   huidigQ: null,
   log: [],
@@ -1911,6 +1936,37 @@ function kiesMerk(m) {
     b.className = 'merk-btn';
   });
   document.getElementById('mb-' + m).classList.add('active-' + m);
+  // SALTO: verberg foutcodes (niet van toepassing)
+  if (m === 'salto') {
+    document.getElementById('fout-wrap').classList.remove('visible');
+    return;
+  }
+  renderFoutcodeKiezer(m);
+}
+
+function renderFoutcodeKiezer(m) {
+  const wrap = document.getElementById('fout-wrap');
+  const grid = document.getElementById('fout-grid');
+  if (!FOUTCODES[m]) { wrap.classList.remove('visible'); return; }
+  document.getElementById('fout-wrap-title').textContent =
+    `Bekende foutcodes ${MERK_LABEL[m]} — selecteer indien van toepassing`;
+  grid.innerHTML = FOUTCODES[m].map(fc => `
+    <button class="fout-chip" id="fc-${fc.code}" onclick="kiesFoutcode('${fc.code}')">
+      <span class="fout-code">${fc.code}</span>
+      <span class="fout-desc">${fc.desc}</span>
+    </button>`).join('');
+  wrap.classList.add('visible');
+}
+
+function kiesFoutcode(code) {
+  if (st.gekozenFoutcode === code) {
+    st.gekozenFoutcode = null;
+    document.querySelectorAll('.fout-chip').forEach(c => c.classList.remove('selected'));
+  } else {
+    st.gekozenFoutcode = code;
+    document.querySelectorAll('.fout-chip').forEach(c => c.classList.remove('selected'));
+    document.getElementById('fc-' + code).classList.add('selected');
+  }
 }
 
 // ── WIZARD STARTEN ──
@@ -1926,6 +1982,7 @@ function startWizard() {
     sys:  document.getElementById('f-sys').value.trim()  || "—",
     note: document.getElementById('f-note').value.trim() || ""
   };
+  st.zichtbareCode = document.getElementById('f-code').value.trim() || null;
 
   // sidebar
   document.getElementById('k-empty').style.display  = 'none';
@@ -1941,6 +1998,9 @@ function startWizard() {
     document.getElementById('k-note').textContent = st.klant.note;
     document.getElementById('k-note-row').style.display = '';
   }
+
+  // foutcode sidebar
+  if (st.gekozenFoutcode) renderFCsidebar();
 
   st.huidigQ = TREES[st.merk].start;
   st.log = []; st.history = []; st.stap = 0;
@@ -1961,6 +2021,15 @@ function renderVraag() {
   document.getElementById('q-text').textContent = q.text;
   document.getElementById('q-hint').innerHTML   = q.hint;
 
+  // toon gekozen foutcode als reminder
+  const box = document.getElementById('fc-check-box');
+  if (st.gekozenFoutcode && FOUTCODES[st.merk]) {
+    const fc = FOUTCODES[st.merk].find(f => f.code === st.gekozenFoutcode);
+    if (fc) {
+      box.innerHTML = `📌 Gekozen foutcode: <strong>${fc.code} — ${fc.desc}</strong>. Hou dit in gedachten bij het stellen van de vragen.`;
+      box.classList.add('visible');
+    }
+  }
   updateProgress();
 }
 
@@ -2002,6 +2071,16 @@ function toonResultaat(key) {
   badge.className = 'res-badge ' + (types[r.type] || 'support');
   badge.textContent = labels[r.type] || '✔  Support';
 
+  // gekozen foutcode in resultaat
+  const fcBox = document.getElementById('res-fc-box');
+  if (st.gekozenFoutcode && st.merk && FOUTCODES[st.merk]) {
+    const fc = FOUTCODES[st.merk].find(f => f.code === st.gekozenFoutcode);
+    if (fc) {
+      fcBox.innerHTML = `<div class="sel-fc-box"><div class="sel-fc-code">${fc.code}</div><div class="sel-fc-info"><strong>${fc.desc}</strong><br>${fc.oplossing}</div></div>`;
+      fcBox.style.display = '';
+    }
+  } else { fcBox.style.display = 'none'; }
+
   document.getElementById('res-title').textContent = r.title;
   document.getElementById('res-desc').textContent  = r.desc;
 
@@ -2011,6 +2090,22 @@ function toonResultaat(key) {
 
   document.getElementById('res-actions').innerHTML = r.actions
     .map((a,i) => `<li><div class="action-num">${i+1}</div>${a}</li>`).join('');
+
+  // foutcodes tabel
+  const fbk = document.getElementById('res-foutcodes-block');
+  if (r.toonFoutcodes && st.merk && FOUTCODES[st.merk]) {
+    document.getElementById('res-fc-merk').textContent = MERK_LABEL[st.merk];
+    const rows = FOUTCODES[st.merk].map(fc => `
+      <tr>
+        <td><span class="fc-code">${fc.code}</span></td>
+        <td>${fc.desc}</td>
+        <td>${fc.oplossing}</td>
+        <td><span class="log-ant ${fc.urgentie === 'support' ? 'ja' : 'nee'}" style="display:inline-flex">${fc.urgentie === 'support' ? 'Support' : 'Technieker'}</span></td>
+      </tr>`).join('');
+    document.getElementById('res-foutcodes-table').innerHTML =
+      `<tr><th>Code</th><th>Naam</th><th>Oplossing</th><th>Actie</th></tr>${rows}`;
+    fbk.style.display = '';
+  } else { fbk.style.display = 'none'; }
 
   document.getElementById('res-manuals').innerHTML = r.manuals
     .map(m => `<div class="manual-item"><span class="mi-ico">${m.ico}</span>${m.text}</div>`).join('');
@@ -2025,6 +2120,19 @@ function toonResultaat(key) {
     manBlok.style.display = 'none';
   }
   toonScherm('s-result');
+}
+
+// ── FOUTCODE SIDEBAR ──
+function renderFCsidebar() {
+  const sb = document.getElementById('s-fc-sidebar');
+  if (!st.gekozenFoutcode || !st.merk || !FOUTCODES[st.merk]) { sb.style.display='none'; return; }
+  const fc = FOUTCODES[st.merk].find(f => f.code === st.gekozenFoutcode);
+  if (!fc) { sb.style.display='none'; return; }
+  document.getElementById('fc-sidebar-content').innerHTML = `
+    <div style="font-family:monospace;font-size:1.1rem;font-weight:800;color:var(--navy);margin-bottom:.3rem">${fc.code}</div>
+    <div style="font-size:.82rem;font-weight:600;color:var(--g600);margin-bottom:.3rem">${fc.desc}</div>
+    <div style="font-size:.78rem;color:var(--g400);line-height:1.45">${fc.oplossing}</div>`;
+  sb.style.display = '';
 }
 
 // ── SCHERM WISSELEN ──
@@ -2061,12 +2169,15 @@ function closeModal()   { document.getElementById('overlay').classList.remove('o
 // ── RESET ──
 function resetWizard() {
   closeModal();
-  st = { merk:null, gekozenFoutcode:null, klant:{}, huidigQ:null, log:[], history:[], stap:0, result:null };
-  ['f-naam','f-tel','f-nr','f-sys','f-note'].forEach(id => { document.getElementById(id).value = ''; });
+  st = { merk:null, gekozenFoutcode:null, zichtbareCode: null, klant:{}, huidigQ:null, log:[], history:[], stap:0, result:null };
+  ['f-naam','f-tel','f-nr','f-sys','f-note','f-code'].forEach(id => { document.getElementById(id).value = ''; });
   document.getElementById('f-sys').value = '';
   document.querySelectorAll('.merk-btn').forEach(b => b.className = 'merk-btn');
+  document.getElementById('fout-wrap').classList.remove('visible');
   document.getElementById('k-info').style.display = 'none';
   document.getElementById('k-empty').style.display = '';
+  document.getElementById('s-fc-sidebar').style.display = 'none';
+  document.getElementById('fc-check-box').classList.remove('visible');
   updateLog(); updateProgress();
   toonScherm('s-start');
 }
@@ -2106,9 +2217,9 @@ function generatePDF() {
   const sectie = (titel) => {
     if (y > 265) { doc.addPage(); y = 15; }
     doc.setFontSize(9); doc.setFont('helvetica','bold');
-    doc.setTextColor(11,29,58);
+    doc.setTextColor(192, 57, 43);
     doc.text(titel, 14, y); y += 2.5;
-    doc.setDrawColor(190,200,220);
+    doc.setDrawColor(192, 57, 43);
     doc.line(14, y, 196, y); y += 6;
     doc.setTextColor(30,45,72);
   };
@@ -2127,13 +2238,20 @@ function generatePDF() {
   if (c.note) rij('Notitie', c.note);
   y += 4;
 
+  if (st.zichtbareCode) {
+    sectie('ZICHTBARE FOUTCODE');
+    doc.setFontSize(11); doc.setFont('helvetica','bold'); doc.setTextColor(192,57,43);
+    doc.text(st.zichtbareCode, 14, y); y += 8;
+    doc.setTextColor(30,45,72); doc.setFontSize(8.5); doc.setFont('helvetica','normal');
+  }
+
   sectie('DIAGNOSE RESULTAAT');
   const type_labels = { support:'SUPPORT DIENST', technician:'TECHNIEKER NODIG', urgent:'URGENT — TECHNIEKER', mech:'MECHANISCHE TECHNIEKER', electric:'ELEKTROTECHNISCHE TECHNIEKER' };
   const type_colors = { support:[0,130,100], technician:[180,120,0], urgent:[180,30,20], mech:[160,80,0], electric:[0,60,150] };
   const tcol = type_colors[r.type] || [0,0,0];
   doc.setFontSize(11); doc.setFont('helvetica','bold'); doc.setTextColor(...tcol);
   doc.text(type_labels[r.type] || '', 14, y); y += 7;
-  doc.setFontSize(10); doc.setTextColor(11,29,58);
+  doc.setFontSize(10); doc.setTextColor(30,45,72);
   const titleLines = doc.splitTextToSize(r.title.replace(/⚠ /g,''), 180);
   doc.text(titleLines, 14, y); y += titleLines.length * 5 + 4;
   doc.setFontSize(8.5); doc.setFont('helvetica','normal'); doc.setTextColor(60,75,100);
@@ -2142,9 +2260,9 @@ function generatePDF() {
   if (r.merkNote) {
     const mn = r.merkNote.replace(/[📡💻🔧🔑⚡🐾📱🔐🔍📌]/gu, '');
     const mnLines = doc.splitTextToSize(mn.trim(), 178);
-    doc.setFillColor(240,244,252);
+    doc.setFillColor(255, 240, 240);
     doc.roundedRect(12, y-2, 184, mnLines.length * 4.5 + 5, 2, 2, 'F');
-    doc.setTextColor(28,54,96); doc.text(mnLines, 16, y+2); y += mnLines.length * 4.5 + 8;
+    doc.setTextColor(80, 30, 30); doc.text(mnLines, 16, y+2); y += mnLines.length * 4.5 + 8;
   }
   y += 2;
 
@@ -2199,62 +2317,44 @@ function sendEmail() {
   const r = st.result;
   const merkLabel = MERK_LABEL[st.merk] || '—';
   const nu = new Date().toLocaleString('nl-BE');
-  const sep = '─'.repeat(44);
 
-  const typeLabel = { support:'SUPPORT DIENST', technician:'TECHNIEKER NODIG', urgent:'URGENT — TECHNIEKER', mech:'MECHANISCHE TECHNIEKER', electric:'ELEKTROTECHNISCHE TECHNIEKER' };
+  const typeLabel = { support:'SUPPORT', technician:'TECHNIEKER', urgent:'URGENT TECHNIEKER', mech:'MECH TECHNIEKER', electric:'ELECTRO TECHNIEKER' };
 
-  let body = `Beste,\n\n`;
-  body += `Hierbij ontvangt u het supportrapport van Inbraakveilig Supportcheck.\n`;
-  body += `Melding aangemaakt op: ${nu}\n\n`;
+  let body = `INBRAAKVEILIG — SUPPORT TICKET\n`;
+  body += `Gegenereerd: ${nu}\n`;
+  body += `════════════════════════════════════════════════════════\n\n`;
 
-  body += `════════════════════════════════════════════════════════\n`;
-  body += `KLANTGEGEVENS\n`;
-  body += `════════════════════════════════════════════════════════\n`;
-  body += `Naam klant     : ${c.naam}\n`;
-  body += `Telefoon       : ${c.tel}\n`;
-  body += `Klantnummer    : ${c.nr || '—'}\n`;
-  body += `Systeem / Model: ${c.sys || '—'}\n`;
-  body += `Alarmmerk      : ${merkLabel}\n`;
-  if (c.note) body += `Extra notitie  : ${c.note}\n`;
+  body += `KLANT\n`;
+  body += `Naam: ${c.naam}  |  Tel: ${c.tel}\n`;
+  body += `Klantnr: ${c.nr}  |  Systeem: ${c.sys}\n`;
+  body += `Merk: ${merkLabel}\n`;
+  if (c.note) body += `Notitie: ${c.note}\n`;
 
-  body += `\n════════════════════════════════════════════════════════\n`;
-  body += `DIAGNOSE RESULTAAT\n`;
-  body += `════════════════════════════════════════════════════════\n`;
-  body += `Aanbeveling    : ${typeLabel[r.type] || ''}\n`;
-  body += `Titel          : ${r.title}\n\n`;
-  body += `Beschrijving   :\n${r.desc}\n`;
-  if (r.merkNote) {
-    const cleanNote = r.merkNote.replace(/[📡💻🔧🔑⚡🐾📱🔐🔍📌]/gu,'').trim();
-    body += `\nMerk-specifieke opmerking:\n${cleanNote}\n`;
+  if (st.zichtbareCode) {
+    body += `\nZICHTBARE FOUTCODE (klant ziet dit): ${st.zichtbareCode}\n`;
   }
 
-  body += `\n════════════════════════════════════════════════════════\n`;
-  body += `AANBEVOLEN ACTIES\n`;
-  body += `════════════════════════════════════════════════════════\n`;
+  body += `\nRESULTAAT\n`;
+  body += `Type: ${typeLabel[r.type] || r.type}\n`;
+  body += `Titel: ${r.title}\n`;
+  if (r.desc) body += `Korte samenvatting: ${r.desc.substring(0, 300)}${r.desc.length > 300 ? '...' : ''}\n`;
+
+  body += `\nAANBEVOLEN ACTIES\n`;
   r.actions.forEach((a,i) => { body += `${i+1}. ${a}\n`; });
 
-  body += `\n════════════════════════════════════════════════════════\n`;
-  body += `HANDLEIDINGEN & DOCUMENTATIE\n`;
-  body += `════════════════════════════════════════════════════════\n`;
-  r.manuals.forEach(m => { body += `• ${m.text}\n`; });
+  body += `\nVRAGENLOG (antwoorden klant)\n`;
+  st.log.forEach((it,i) => { body += `${i+1}. ${it.vraag} → ${it.antwoord.toUpperCase()}\n`; });
 
-  if (st.merk === 'risco') {
-    body += `\nRisco handleidingen (beschikbaar via Supportcheck):\n`;
-    const mKeys = getRiscoManuals();
-    mKeys.forEach(k => {
-      const m = MANUALS[k];
-      body += `• ${m.naam} (${m.modellen})\n`;
-    });
+  if (st.merk === 'risco' && r.manuals && r.manuals.length > 0) {
+    body += `\nRELEVANTE HANDLEIDINGEN\n`;
+    r.manuals.forEach(m => { body += `• ${m.text}\n`; });
   }
 
-  body += `\n\nMet vriendelijke groet,\n`;
-  body += `Inbraakveilig Support Team\n`;
-  body += `Supportcheck Tool — Intern gebruik\n`;
-  body += `────────────────────────────────────────────────────────\n`;
-  body += `Dit rapport is gegenereerd via de Supportcheck tool.\n`;
-  body += `Voor vragen: neem contact op met de support dienst.`;
+  body += `\n════════════════════════════════════════════════════════\n`;
+  body += `Intern document — Supportcheck Inbraakveilig\n`;
+  body += `Stuur dit ticket door naar de juiste support engineer.`;
 
-  const subject = `[Inbraakveilig] Support ${c.naam} — ${merkLabel} — ${typeLabel[r.type]||''}`;
+  const subject = `[Support] ${c.naam} — ${merkLabel} — ${typeLabel[r.type]||'SUPPORT'}`;
   window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 
