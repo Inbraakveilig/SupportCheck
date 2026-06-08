@@ -765,7 +765,6 @@ body {
           <button class="merk-btn" id="mb-satel"    onclick="kiesMerk('satel')"><div class="merk-ico"><img src="https://www.satel.pl/pub/images/logo-satel.png" onerror="this.style.display='none';this.nextSibling.style.display='inline'" alt="Satel" style="height:24px;width:auto;max-width:70px;object-fit:contain"><span style="display:none;font-size:1.2rem;font-weight:800;color:var(--satel)">S</span></div>Satel<div class="merk-dot"></div></button>
           <button class="merk-btn" id="mb-salto"    onclick="kiesMerk('salto')"><div class="merk-ico" style="font-size:.7rem;font-weight:900;letter-spacing:-.02em;color:var(--salto)">SALTO</div>Toegang<div class="merk-dot"></div></button>
           <button class="merk-btn" id="mb-onbekend" onclick="kiesMerk('onbekend')"><div class="merk-ico" style="font-size:1.6rem">❓</div>Onbekend<div class="merk-dot"></div></button>
-          <button class="merk-btn" id="mb-brand" onclick="kiesMerk('brand')"><div class="merk-ico" style="font-size:1.4rem">🔥</div>Brandmelder<div class="merk-dot"></div></button>
         </div>
 
         <!-- Foutcode picker -->
@@ -801,16 +800,6 @@ body {
         <div class="fg">
           <label for="f-note">Extra opmerking (optioneel)</label>
           <textarea id="f-note" placeholder="Bijv. klant is moeilijk bereikbaar, heeft al gebeld gisteren…"></textarea>
-        </div>
-
-        <div class="fg">
-          <label for="f-extra-onbekend">Extra info bij Onbekend systeem (optioneel)</label>
-          <textarea id="f-extra-onbekend" placeholder="Foto centrale? Foto klavier? Heeft klant app? Bedraad of draadloos?"></textarea>
-        </div>
-
-        <div class="fg">
-          <label for="f-brand-info">Brandmelder info (Detnov / Inim / antwoorden op vragen)</label>
-          <textarea id="f-brand-info" placeholder="Stop zoemer code 1111? Rook/stof? Batterijen verwijderd? Bedraad of draadloos? Merk: Detnov of Inim?"></textarea>
         </div>
 
         <button class="btn btn-navy" onclick="startWizard()">▶&nbsp; Start supportcheck</button>
@@ -1930,8 +1919,8 @@ let st = {
   result: null
 };
 const MAX_STAP = 10;
-const MERK_LABEL = { risco:"RISCO", bosch:"BOSCH", satel:"SATEL", salto:"SALTO", onbekend:"Onbekend", brand:"BRANDMELDER" };
-const MERK_ICO   = { risico:"🔵 RISCO", bosch:"🔴 BOSCH", satel:"🟢 SATEL", salto:"🔑 SALTO", onbekend:"⚪ Onbekend", brand:"🔥 BRANDMELDER" };
+const MERK_LABEL = { risco:"RISCO", bosch:"BOSCH", satel:"SATEL", salto:"SALTO", onbekend:"Onbekend" };
+const MERK_ICO   = { risco:"🔵 RISCO", bosch:"🔴 BOSCH", satel:"🟢 SATEL", salto:"🔑 SALTO", onbekend:"⚪ Onbekend" };
 
 // ── MERK KIEZEN ──
 function kiesMerk(m) {
@@ -1985,10 +1974,6 @@ function startWizard() {
     naam, tel,
     nr:   document.getElementById('f-nr').value.trim()   || "—",
     sys:  document.getElementById('f-sys').value.trim()  || "—",
-    contactpersoon: document.getElementById('f-contact').value.trim() || "—",
-    projectnr: document.getElementById('f-project').value.trim() || "—",
-    extraOnbekend: document.getElementById('f-extra-onbekend').value.trim() || "",
-    brandInfo: document.getElementById('f-brand-info').value.trim() || "",
     note: document.getElementById('f-note').value.trim() || ""
   };
 
@@ -2243,26 +2228,8 @@ function generatePDF() {
   rij('Naam', c.naam); rij('Telefoon', c.tel);
   rij('Klantnummer', c.nr); rij('Systeem', c.sys);
   rij('Merk', merkLabel);
-  rij('Contactpersoon', c.contactpersoon);
-  rij('Projectnummer', c.projectnr);
   if (c.note) rij('Notitie', c.note);
   y += 4;
-
-  if (c.extraOnbekend || c.brandInfo) {
-    sectie('EXTRA DIAGNOSTIEK');
-    if (c.extraOnbekend) {
-      doc.setFontSize(8.5); doc.setTextColor(30,45,72);
-      doc.text('Onbekend systeem:', 14, y); y += 5;
-      const extraLines = doc.splitTextToSize(c.extraOnbekend, 178);
-      doc.text(extraLines, 16, y); y += extraLines.length * 4.5 + 6;
-    }
-    if (c.brandInfo) {
-      doc.setFontSize(8.5); doc.setTextColor(30,45,72);
-      doc.text('Brandmelder info (Detnov / Inim):', 14, y); y += 5;
-      const brandLines = doc.splitTextToSize(c.brandInfo, 178);
-      doc.text(brandLines, 16, y); y += brandLines.length * 4.5 + 6;
-    }
-  }
 
   if (st.gekozenFoutcode && FOUTCODES[st.merk]) {
     const fc = FOUTCODES[st.merk].find(f => f.code === st.gekozenFoutcode);
