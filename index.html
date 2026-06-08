@@ -765,6 +765,7 @@ body {
           <button class="merk-btn" id="mb-satel"    onclick="kiesMerk('satel')"><div class="merk-ico"><img src="https://www.satel.pl/pub/images/logo-satel.png" onerror="this.style.display='none';this.nextSibling.style.display='inline'" alt="Satel" style="height:24px;width:auto;max-width:70px;object-fit:contain"><span style="display:none;font-size:1.2rem;font-weight:800;color:var(--satel)">S</span></div>Satel<div class="merk-dot"></div></button>
           <button class="merk-btn" id="mb-salto"    onclick="kiesMerk('salto')"><div class="merk-ico" style="font-size:.7rem;font-weight:900;letter-spacing:-.02em;color:var(--salto)">SALTO</div>Toegang<div class="merk-dot"></div></button>
           <button class="merk-btn" id="mb-onbekend" onclick="kiesMerk('onbekend')"><div class="merk-ico" style="font-size:1.6rem">❓</div>Onbekend<div class="merk-dot"></div></button>
+          <button class="merk-btn" id="mb-brand" onclick="kiesMerk('brand')"><div class="merk-ico" style="font-size:1.4rem">🔥</div>Brandmelder<div class="merk-dot"></div></button>
         </div>
 
         <!-- Foutcode picker -->
@@ -800,6 +801,16 @@ body {
         <div class="fg">
           <label for="f-note">Extra opmerking (optioneel)</label>
           <textarea id="f-note" placeholder="Bijv. klant is moeilijk bereikbaar, heeft al gebeld gisteren…"></textarea>
+        </div>
+
+        <div class="fg">
+          <label for="f-extra-onbekend">Extra info bij Onbekend systeem (optioneel)</label>
+          <textarea id="f-extra-onbekend" placeholder="Foto centrale? Foto klavier? Heeft klant app? Bedraad of draadloos?"></textarea>
+        </div>
+
+        <div class="fg">
+          <label for="f-brand-info">Brandmelder info (Detnov / Inim / antwoorden op vragen)</label>
+          <textarea id="f-brand-info" placeholder="Stop zoemer code 1111? Rook/stof? Batterijen verwijderd? Bedraad of draadloos? Merk: Detnov of Inim?"></textarea>
         </div>
 
         <button class="btn btn-navy" onclick="startWizard()">▶&nbsp; Start supportcheck</button>
@@ -864,6 +875,7 @@ body {
 
       <div class="res-btns">
         <button class="btn btn-navy"  onclick="generatePDF()">📄&nbsp; PDF Rapport</button>
+        <button class="btn btn-green" onclick="sendEmail()">✉&nbsp; E-mail opstellen</button>
         <button class="btn btn-reset" onclick="confirmReset()">↺&nbsp; Nieuwe melding</button>
       </div>
     </div>
@@ -1918,8 +1930,8 @@ let st = {
   result: null
 };
 const MAX_STAP = 10;
-const MERK_LABEL = { risco:"RISCO", bosch:"BOSCH", satel:"SATEL", salto:"SALTO", onbekend:"Onbekend" };
-const MERK_ICO   = { risco:"🔵 RISCO", bosch:"🔴 BOSCH", satel:"🟢 SATEL", salto:"🔑 SALTO", onbekend:"⚪ Onbekend" };
+const MERK_LABEL = { risco:"RISCO", bosch:"BOSCH", satel:"SATEL", salto:"SALTO", onbekend:"Onbekend", brand:"BRANDMELDER" };
+const MERK_ICO   = { risico:"🔵 RISCO", bosch:"🔴 BOSCH", satel:"🟢 SATEL", salto:"🔑 SALTO", onbekend:"⚪ Onbekend", brand:"🔥 BRANDMELDER" };
 
 // ── MERK KIEZEN ──
 function kiesMerk(m) {
@@ -1973,6 +1985,10 @@ function startWizard() {
     naam, tel,
     nr:   document.getElementById('f-nr').value.trim()   || "—",
     sys:  document.getElementById('f-sys').value.trim()  || "—",
+    contactpersoon: document.getElementById('f-contact').value.trim() || "—",
+    projectnr: document.getElementById('f-project').value.trim() || "—",
+    extraOnbekend: document.getElementById('f-extra-onbekend').value.trim() || "",
+    brandInfo: document.getElementById('f-brand-info').value.trim() || "",
     note: document.getElementById('f-note').value.trim() || ""
   };
 
@@ -2186,7 +2202,7 @@ function generatePDF() {
   const merkLabel = MERK_LABEL[st.merk] || '—';
 
   // koptekst
-  doc.setFillColor(0, 0, 0);
+  doc.setFillColor(11, 29, 58);
   doc.rect(0, 0, 210, 30, 'F');
   doc.setTextColor(255,255,255);
   doc.setFontSize(16); doc.setFont('helvetica','bold');
@@ -2209,7 +2225,7 @@ function generatePDF() {
   const sectie = (titel) => {
     if (y > 265) { doc.addPage(); y = 15; }
     doc.setFontSize(9); doc.setFont('helvetica','bold');
-    doc.setTextColor(0,0,0);
+    doc.setTextColor(11,29,58);
     doc.text(titel, 14, y); y += 2.5;
     doc.setDrawColor(190,200,220);
     doc.line(14, y, 196, y); y += 6;
@@ -2231,6 +2247,22 @@ function generatePDF() {
   rij('Projectnummer', c.projectnr);
   if (c.note) rij('Notitie', c.note);
   y += 4;
+
+  if (c.extraOnbekend || c.brandInfo) {
+    sectie('EXTRA DIAGNOSTIEK');
+    if (c.extraOnbekend) {
+      doc.setFontSize(8.5); doc.setTextColor(30,45,72);
+      doc.text('Onbekend systeem:', 14, y); y += 5;
+      const extraLines = doc.splitTextToSize(c.extraOnbekend, 178);
+      doc.text(extraLines, 16, y); y += extraLines.length * 4.5 + 6;
+    }
+    if (c.brandInfo) {
+      doc.setFontSize(8.5); doc.setTextColor(30,45,72);
+      doc.text('Brandmelder info (Detnov / Inim):', 14, y); y += 5;
+      const brandLines = doc.splitTextToSize(c.brandInfo, 178);
+      doc.text(brandLines, 16, y); y += brandLines.length * 4.5 + 6;
+    }
+  }
 
   if (st.gekozenFoutcode && FOUTCODES[st.merk]) {
     const fc = FOUTCODES[st.merk].find(f => f.code === st.gekozenFoutcode);
@@ -2261,11 +2293,28 @@ function generatePDF() {
   if (r.merkNote) {
     const mn = r.merkNote.replace(/[📡💻🔧🔑⚡🐾📱🔐🔍📌]/gu, '');
     const mnLines = doc.splitTextToSize(mn.trim(), 178);
-    doc.setFillColor(255, 235, 235);
+    doc.setFillColor(240,244,252);
     doc.roundedRect(12, y-2, 184, mnLines.length * 4.5 + 5, 2, 2, 'F');
-    doc.setTextColor(180, 30, 30); doc.text(mnLines, 16, y+2); y += mnLines.length * 4.5 + 8;
+    doc.setTextColor(28,54,96); doc.text(mnLines, 16, y+2); y += mnLines.length * 4.5 + 8;
   }
   y += 2;
+
+  sectie('AANBEVOLEN ACTIES');
+  doc.setFont('helvetica','normal'); doc.setFontSize(8.5); doc.setTextColor(30,45,72);
+  r.actions.forEach((a, i) => {
+    if (y > 270) { doc.addPage(); y = 15; }
+    const ls = doc.splitTextToSize(`${i+1}.  ${a}`, 178);
+    doc.text(ls, 16, y); y += ls.length * 4.5 + 2;
+  });
+  y += 5;
+
+  sectie('HANDLEIDINGEN');
+  doc.setFont('helvetica','normal'); doc.setFontSize(8.5); doc.setTextColor(28,54,96);
+  r.manuals.forEach(m => {
+    if (y > 270) { doc.addPage(); y = 15; }
+    doc.text('→  ' + m.text, 16, y); y += 6;
+  });
+  y += 5;
 
   sectie('VRAGENLOG');
   doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(30,45,72);
