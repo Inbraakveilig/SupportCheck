@@ -797,18 +797,6 @@ body {
             <input type="text" id="f-sys" placeholder="bijv. LightSYS+, DS150i, INTEGRA 128…">
           </div>
         </div>
-
-        <div class="fg-row">
-          <div class="fg">
-            <label for="f-contact">Contactpersoon</label>
-            <input type="text" id="f-contact" placeholder="Naam contactpersoon">
-          </div>
-          <div class="fg">
-            <label for="f-project">Projectnummer</label>
-            <input type="text" id="f-project" placeholder="PRJ-00000">
-          </div>
-        </div>
-
         <div class="fg">
           <label for="f-note">Extra opmerking (optioneel)</label>
           <textarea id="f-note" placeholder="Bijv. klant is moeilijk bereikbaar, heeft al gebeld gisteren…"></textarea>
@@ -876,7 +864,6 @@ body {
 
       <div class="res-btns">
         <button class="btn btn-navy"  onclick="generatePDF()">📄&nbsp; PDF Rapport</button>
-        <button class="btn btn-green" onclick="sendEmail()">✉&nbsp; E-mail opstellen</button>
         <button class="btn btn-reset" onclick="confirmReset()">↺&nbsp; Nieuwe melding</button>
       </div>
     </div>
@@ -1986,8 +1973,6 @@ function startWizard() {
     naam, tel,
     nr:   document.getElementById('f-nr').value.trim()   || "—",
     sys:  document.getElementById('f-sys').value.trim()  || "—",
-    contactpersoon: document.getElementById('f-contact').value.trim() || "—",
-    projectnr: document.getElementById('f-project').value.trim() || "—",
     note: document.getElementById('f-note').value.trim() || ""
   };
 
