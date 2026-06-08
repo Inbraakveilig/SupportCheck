@@ -797,6 +797,18 @@ body {
             <input type="text" id="f-sys" placeholder="bijv. LightSYS+, DS150i, INTEGRA 128…">
           </div>
         </div>
+
+        <div class="fg-row">
+          <div class="fg">
+            <label for="f-contact">Contactpersoon</label>
+            <input type="text" id="f-contact" placeholder="Naam contactpersoon">
+          </div>
+          <div class="fg">
+            <label for="f-project">Projectnummer</label>
+            <input type="text" id="f-project" placeholder="PRJ-00000">
+          </div>
+        </div>
+
         <div class="fg">
           <label for="f-note">Extra opmerking (optioneel)</label>
           <textarea id="f-note" placeholder="Bijv. klant is moeilijk bereikbaar, heeft al gebeld gisteren…"></textarea>
@@ -864,6 +876,7 @@ body {
 
       <div class="res-btns">
         <button class="btn btn-navy"  onclick="generatePDF()">📄&nbsp; PDF Rapport</button>
+        <button class="btn btn-green" onclick="sendEmail()">✉&nbsp; E-mail opstellen</button>
         <button class="btn btn-reset" onclick="confirmReset()">↺&nbsp; Nieuwe melding</button>
       </div>
     </div>
@@ -1973,6 +1986,8 @@ function startWizard() {
     naam, tel,
     nr:   document.getElementById('f-nr').value.trim()   || "—",
     sys:  document.getElementById('f-sys').value.trim()  || "—",
+    contactpersoon: document.getElementById('f-contact').value.trim() || "—",
+    projectnr: document.getElementById('f-project').value.trim() || "—",
     note: document.getElementById('f-note').value.trim() || ""
   };
 
@@ -2186,7 +2201,7 @@ function generatePDF() {
   const merkLabel = MERK_LABEL[st.merk] || '—';
 
   // koptekst
-  doc.setFillColor(11, 29, 58);
+  doc.setFillColor(0, 0, 0);
   doc.rect(0, 0, 210, 30, 'F');
   doc.setTextColor(255,255,255);
   doc.setFontSize(16); doc.setFont('helvetica','bold');
@@ -2209,7 +2224,7 @@ function generatePDF() {
   const sectie = (titel) => {
     if (y > 265) { doc.addPage(); y = 15; }
     doc.setFontSize(9); doc.setFont('helvetica','bold');
-    doc.setTextColor(11,29,58);
+    doc.setTextColor(0,0,0);
     doc.text(titel, 14, y); y += 2.5;
     doc.setDrawColor(190,200,220);
     doc.line(14, y, 196, y); y += 6;
@@ -2227,6 +2242,8 @@ function generatePDF() {
   rij('Naam', c.naam); rij('Telefoon', c.tel);
   rij('Klantnummer', c.nr); rij('Systeem', c.sys);
   rij('Merk', merkLabel);
+  rij('Contactpersoon', c.contactpersoon);
+  rij('Projectnummer', c.projectnr);
   if (c.note) rij('Notitie', c.note);
   y += 4;
 
@@ -2259,28 +2276,11 @@ function generatePDF() {
   if (r.merkNote) {
     const mn = r.merkNote.replace(/[📡💻🔧🔑⚡🐾📱🔐🔍📌]/gu, '');
     const mnLines = doc.splitTextToSize(mn.trim(), 178);
-    doc.setFillColor(240,244,252);
+    doc.setFillColor(255, 235, 235);
     doc.roundedRect(12, y-2, 184, mnLines.length * 4.5 + 5, 2, 2, 'F');
-    doc.setTextColor(28,54,96); doc.text(mnLines, 16, y+2); y += mnLines.length * 4.5 + 8;
+    doc.setTextColor(180, 30, 30); doc.text(mnLines, 16, y+2); y += mnLines.length * 4.5 + 8;
   }
   y += 2;
-
-  sectie('AANBEVOLEN ACTIES');
-  doc.setFont('helvetica','normal'); doc.setFontSize(8.5); doc.setTextColor(30,45,72);
-  r.actions.forEach((a, i) => {
-    if (y > 270) { doc.addPage(); y = 15; }
-    const ls = doc.splitTextToSize(`${i+1}.  ${a}`, 178);
-    doc.text(ls, 16, y); y += ls.length * 4.5 + 2;
-  });
-  y += 5;
-
-  sectie('HANDLEIDINGEN');
-  doc.setFont('helvetica','normal'); doc.setFontSize(8.5); doc.setTextColor(28,54,96);
-  r.manuals.forEach(m => {
-    if (y > 270) { doc.addPage(); y = 15; }
-    doc.text('→  ' + m.text, 16, y); y += 6;
-  });
-  y += 5;
 
   sectie('VRAGENLOG');
   doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor(30,45,72);
