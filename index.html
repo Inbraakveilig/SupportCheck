@@ -49,17 +49,9 @@
     border-bottom:1px solid var(--line);
     display:flex;align-items:center;gap:12px;
   }
-  .logo-mark{
-    width:42px;height:42px;flex:none;border-radius:8px;
-    background:var(--red);position:relative;
-    display:grid;place-items:center;
-    box-shadow:inset 0 0 0 2px rgba(255,255,255,.12);
-  }
-  .logo-mark::before{
-    content:"";width:18px;height:18px;border:3px solid #fff;border-radius:50%;
-  }
-  .logo-mark::after{
-    content:"";position:absolute;width:6px;height:6px;background:#fff;border-radius:50%;
+  .logo-img{
+    width:46px;height:46px;flex:none;border-radius:9px;object-fit:cover;
+    background:#000;box-shadow:inset 0 0 0 2px rgba(255,255,255,.12);
   }
   .brandbar h1{font-family:'Saira Condensed';font-weight:700;font-size:21px;letter-spacing:.5px;line-height:1;text-transform:uppercase}
   .brandbar h1 span{color:var(--red)}
@@ -139,6 +131,8 @@
   .badge{width:54px;height:54px;border-radius:10px;display:grid;place-items:center;background:var(--ink);color:#fff;font-family:'Saira Condensed';font-weight:700;font-size:13px;letter-spacing:.5px;text-transform:uppercase;border:2px solid var(--ink);line-height:1;text-align:center;padding:4px}
   .badge.red{background:var(--red);border-color:var(--red)}
   .badge.outline{background:#fff;color:var(--ink)}
+  .brandlogo{width:64px;height:64px;border-radius:10px;background:#fff;border:2px solid #e4e2db;display:grid;place-items:center;overflow:hidden;padding:9px}
+  .brandimg{max-width:100%;max-height:100%;object-fit:contain;display:block}
 
   /* form */
   .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
@@ -244,7 +238,7 @@
   <!-- ============ SIDEBAR ============ -->
   <aside class="sidebar">
     <div class="brandbar">
-      <div class="logo-mark"></div>
+      <img id="logo-img" class="logo-img" src="logo.png" alt="Inbraakveilig" onerror="this.onerror=null;this.src=LOGO_DATA">
       <div>
         <h1>Inbraak<span>veilig</span></h1>
         <small>Supportcheck · intern</small>
@@ -319,6 +313,28 @@
 </div>
 
 <script>
+/* ============================================================
+   LOGO INBRAAKVEILIG
+   Embedded base64 -> werkt meteen. Wil je het vervangen?
+   Upload een "logo.png" in de root van je GitHub-repo: die wordt
+   automatisch gebruikt links boven (terugval = onderstaande data).
+   Voor de PDF wordt altijd LOGO_DATA gebruikt; vervang die string
+   als je daar een ander logo wil.
+   ============================================================ */
+const LOGO_DATA = "data:image/jpeg;base64,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sscmZqclstO5xDKmI+nE/HcH7iGu7gJpiVHCbrirpPF2y1RT1VBcoY3y25lZE6N00QPM5g5sZLMuOPUf4SpUrVdAbhaZ3O0ZT6j07VtmjOBNTSkeNSS46skb5Hvg9iOo6FbUqlFX/wAX87peJOaN3aG20zG+4hzvxcVYAoIcZlpmo9+KG6GI+BX2mItk8nPY97HD3gcn94JViOiIiyoiIgIiICIiAiIgIiICIiArktltKDRHD1o3S5gbDNSWqF1TG0YAnkb4s3/Ue/7VUlt5YI9U7u6V0zMxz4rpd6WikaM9WyTNY77nFW+a+3M0JtlZDdtb6korRA4EwxSEumnx5RRNy9/ceiOmeuFYlbWsFqvWmktC2M3jWOo7dZKHs2WtmbGZCOuGN7vd0PzWglQe3T497/c/Gte09kFlpjlv63ubGS1TvayLrHH/ADF/wUR9Ram1Fq6/y3zVN7r7xcZej6qundM/HflBd2aMnDR0Geitpide5HH7pq2meg2v0zNe6hoLWXS7A09Nnyc2EfSPHXzMZ6FRO3C4hd3tzfGg1NrKtbbpcg2ugPyWlLT9V0bMeIP98uPU9Vy9FNXBERQEREBERBs2h9fap261RHf9KXR9HUDDZIyOaKoZ+5Izs5p+0dwQcFTX2v4q9D60ZDbdVOj0teiAD8ok/ok7v4JSfmdvRfjGQA5ygEisot5a5skbZGOa5jhzNc0ghwPmFw/ij2zqdf7Qi6WinM94sDn1kMTG8z5oCPpo2+3DWuHr8PA6lQv0PvBuLt3yxaW1NVU9GHcxoJsT0x65OI35a3OTktwevdSC0nxtyNbHDrjRYeR6dZZZuXPXp9DJn/E+HVXURERdV3mn2mv98/2w20us1K+4P563T9XRvidBIepfE4Ax8pOcs5uhPzcg4bypZUREQEREBERAREQEREBERBltNakvGkNV0OpdP1QpLpb5PGpajw2yeG8Do4NcC0kZyMg9l+L9qG+aov0971Jd6263Gd3NLVVsxlkd7Mu8h5DsFjEQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERAREQEREBERB//9k=";
+
+/* Merklogo terugval: toont de getypte badge als logos/<merk>.png ontbreekt */
+function brandFallback(img){
+  const div = document.createElement('div');
+  div.className = 'badge ' + (img.getAttribute('data-cls')||'');
+  div.textContent = img.getAttribute('data-mark')||'';
+  const wrap = img.closest('.brandlogo');
+  (wrap||img).replaceWith(div);
+}
+function brandVisual(b){
+  return `<div class="brandlogo"><img class="brandimg" src="logos/${b.id}.png" alt="${b.label}" data-cls="${b.cls}" data-mark="${b.mark}" onerror="brandFallback(this)"></div>`;
+}
+
 /* ============================================================
    DATA — disciplines, merken, beslisbomen
    Pas teksten/merken hier aan; logica blijft hetzelfde.
@@ -576,7 +592,7 @@ function renderIntake(){
       <div class="grid brands">
         ${brandList.map(b=>`
           <div class="card ${state.brand===b.id?'sel':''}" onclick="selectBrand('${b.id}')">
-            <div class="badge ${b.cls}">${b.mark}</div>
+            ${brandVisual(b)}
             <div class="ttl">${b.label}</div>
           </div>`).join('')}
       </div>
@@ -783,13 +799,16 @@ function generatePDF(){
   // header band
   doc.setFillColor(...INK); doc.rect(0,0,W,86,'F');
   doc.setFillColor(...RED); doc.rect(0,86,W,5,'F');
+  // logo links
+  try{ doc.addImage(LOGO_DATA,'JPEG',M,20,46,46); }catch(e){}
+  const TX = M + 46 + 16;
   doc.setTextColor(255,255,255);
-  doc.setFont('helvetica','bold'); doc.setFontSize(22);
-  doc.text('INBRAAKVEILIG', M, 42);
-  doc.setTextColor(...RED); doc.setFontSize(22);
-  doc.text('SUPPORTCHECK', M+182, 42);
+  doc.setFont('helvetica','bold'); doc.setFontSize(20);
+  doc.text('INBRAAKVEILIG', TX, 42);
+  doc.setTextColor(...RED); doc.setFontSize(20);
+  doc.text('SUPPORTCHECK', TX+168, 42);
   doc.setTextColor(200,200,206); doc.setFont('helvetica','normal'); doc.setFontSize(9);
-  doc.text('Intern supportrapport', M, 62);
+  doc.text('Intern supportrapport', TX, 62);
   const now=new Date();
   const dstr=now.toLocaleDateString('nl-BE')+' · '+now.toLocaleTimeString('nl-BE',{hour:'2-digit',minute:'2-digit'});
   doc.text(dstr, W-M, 62, {align:'right'});
